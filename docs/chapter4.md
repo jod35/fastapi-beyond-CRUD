@@ -1,7 +1,8 @@
 # FastAPI Beyond CRUD (Chapter Four)
 
-## A better Project Structure
-For now, we have a very simple project structure that looks like this;
+## Improved Project Structure
+
+So far, our project structure is quite simple:
 
 ```console
 ├── env/
@@ -10,11 +11,11 @@ For now, we have a very simple project structure that looks like this;
 └── schemas.py
 ```
 
-And also our `main.py` file, looks like this:
+Additionally, our `main.py` file looks like this:
 
 ```python
 from fastapi import FastAPI, Query
-from schemas import BookSchema,BookUpdateSchema
+from schemas import BookSchema, BookUpdateSchema
 
 app = FastAPI()
 
@@ -28,56 +29,9 @@ books = [
         "page_count": 1234,
         "language": "English",
     },
-    {
-        "id": 2,
-        "title": "Django By Example",
-        "author": "Antonio Mele",
-        "publisher": "Packt Publishing Ltd",
-        "published_date": "2022-01-19",
-        "page_count": 1023,
-        "language": "English",
-    },
-    {
-        "id": 3,
-        "title": "The web socket handbook",
-        "author": "Alex Diaconu",
-        "publisher": "Xinyu Wang",
-        "published_date": "2021-01-01",
-        "page_count": 3677,
-        "language": "English",
-    },
-    {
-        "id": 4,
-        "title": "Head first Javascript",
-        "author": "Hellen Smith",
-        "publisher": "Oreilly Media",
-        "published_date": "2021-01-01",
-        "page_count": 540,
-        "language": "English",
-    },
-    {
-        "id": 5,
-        "title": "Algorithms and Data Structures In Python",
-        "author": "Kent Lee",
-        "publisher": "Springer, Inc",
-        "published_date": "2021-01-01",
-        "page_count": 9282,
-        "language": "English",
-    },
-    {
-        "id": 6,
-        "title": "Head First HTML5 Programming",
-        "author": "Eric T Freeman",
-        "publisher": "O'Reilly Media",
-        "published_date": "2011-21-01",
-        "page_count": 3006,
-        "language": "English",
-    },
+    # ... (other book entries)
 ]
 
-
-
-
 @app.get("/books")
 async def read_books():
     """Read all books"""
@@ -91,7 +45,7 @@ async def read_book(book_id: int):
             return book
     return {"message": "Book not found"}
 
-@app.post('/books',status_code=201)
+@app.post('/books', status_code=201)
 async def create_book(book: BookSchema):
     """Create a new book"""
     books.append(book)
@@ -99,7 +53,7 @@ async def create_book(book: BookSchema):
 
 @app.patch('/book/{book_id}')
 async def update_book(book_id: int, update_data: BookUpdateSchema):
-    """"update book """
+    """"Update book"""
     for book in books:
         if book['id'] == book_id:
             book['title'] = update_data.title
@@ -110,10 +64,9 @@ async def update_book(book_id: int, update_data: BookUpdateSchema):
             return book
     return {"message": "Book not found"}
 
-
-@app.delete('/book/{book_id}',status_code=204)
+@app.delete('/book/{book_id}', status_code=204)
 async def delete_book(book_id: int):
-    """delete a book"""
+    """Delete a book"""
     for book in books:
         if book['id'] == book_id:
             books.remove(book)
@@ -121,47 +74,94 @@ async def delete_book(book_id: int):
     return {"message": "Book not found"}
 ```
 
-The problem we have here is that if we at all we add more code to this file, our code will be messed up as it will be all in one place. To fix this we shall have to create a much more organized project structure. To begin, we shall create a new folder called `src`, This will contain a `__init__.py` file that will make it a Python package. 
+The problem here is that if we add more code to this file, our code will become messy and hard to maintain. To address this, we need to create a more organized project structure. To start, let's create a new folder called `src`, which will contain an `__init__.py` file to make it a Python package:
 
 ```console
 ├── env/
 ├── main.py
 ├── requirements.txt
 └── schemas.py
-|__ src/
-    |__ __init__.py
+└── src/
+    └── __init__.py
 ```
 
-Let us create a folder called `books` that shall contain all source code that will be related to books. Inside the folder, create a `__init__.py` file. Also add a `routes.py` and a `schemas.py` file. The `routes.py` file will contain all the book routes like we created in the [previous Chapter](./chapter3.md). In side the `schema.py`, we shall add the schemas that are currently in our root directory.
+Now, create a folder named `books` inside the `src` directory. Inside this folder, add an `__init__.py` file, a `routes.py` file, a `schemas.py` file, and a `book_data.py` file. The `routes.py` file will contain all the book routes, similar to what we created in the previous chapter. The `schemas.py` file will contain the schemas that are currently in our root directory.
 
 ```console
 ├── env/
 ├── main.py
 ├── requirements.txt
 └── schemas.py
-|__ src/
-    |__ __init__.py
-    |__ books/
-        |__ __init__.py
-        |__ routes.py
-        |__ schemas.py
+└── src/
+    └── __init__.py
+    └── books/
+        └── __init__.py
+        └── routes.py
+        └── schemas.py
+        └── book_data.py
 ```
 
-Let us change `routes.py` to include the following.
+First, let's move our `books` list from `main.py` to `book_data.py` inside the `books` directory.
+
 ```python
+# Inside book_data.py
+
+books = [
+    {
+        "id": 1,
+        "title": "Think Python",
+        "author": "Allen B. Downey",
+        "publisher": "O'Reilly Media",
+        "published_date": "2021-01-01",
+        "page_count": 1234,
+        "language": "English",
+    },
+    # ... (other book entries)
+]
+```
+
+Next, let's also move our `schemas.py` to the `books` directory.
+
+```python
+# Inside schemas.py
+
+from pydantic import BaseModel
+from datetime import datetime
+
+class BookSchema(BaseModel):
+    id: int
+    title: str
+    author: str
+    publisher: str
+    published_date: datetime
+    page_count: int
+    language: str
+
+class BookUpdateSchema(BaseModel):
+    title: str
+    author: str
+    publisher: str
+    page_count: int
+    language: str
+```
+
+Now, let's update `routes.py` as follows:
+
+```python
+# Inside routes.py
+
 from fastapi import APIRouter
 from .book_data import books
+from .schemas import BookSchema, BookUpdateSchema
 
-book_router = APIRouter(
+book_router = APIRouter()
 
-)
-
-@app.get("/books")
+@book_router.get("/")
 async def read_books():
     """Read all books"""
     return books
 
-@app.get('/book/{book_id}')
+@book_router.get('/{book_id}')
 async def read_book(book_id: int):
     """Read a book"""
     for book in books:
@@ -169,15 +169,15 @@ async def read_book(book_id: int):
             return book
     return {"message": "Book not found"}
 
-@app.post('/books',status_code=201)
+@book_router.post('/', status_code=201)
 async def create_book(book: BookSchema):
     """Create a new book"""
     books.append(book)
     return book
 
-@app.patch('/book/{book_id}')
+@book_router.patch('/{book_id}')
 async def update_book(book_id: int, update_data: BookUpdateSchema):
-    """"update book """
+    """"Update book"""
     for book in books:
         if book['id'] == book_id:
             book['title'] = update_data.title
@@ -188,13 +188,60 @@ async def update_book(book_id: int, update_data: BookUpdateSchema):
             return book
     return {"message": "Book not found"}
 
-
-@app.delete('/book/{book_id}',status_code=204)
+@book_router.delete('/{book_id}', status_code=204)
 async def delete_book(book_id: int):
-    """delete a book"""
+    """Delete a book"""
     for book in books:
         if book['id'] == book_id:
             books.remove(book)
             return book
     return {"message": "Book not found"}
 ```
+
+What has been accomplished is the division of our project into modules using routers. FastAPI routers allow easy modularization of our API by grouping related endpoints together. Routers function similarly to FastAPI instances (similar to what we have in `main.py`). As our project expands, we will introduce additional endpoints, and all of them will be organized into modules grouping related functionalities.
+
+Let's enhance our `main.py` file to adopt this modular structure:
+
+```python
+
+# Inside main.py
+from fastapi import FastAPI
+from src.books.routes import book_router
+
+version = 'v1'
+
+app = FastAPI(
+    title='Bookly',
+    description='A RESTful API for a book review service',
+    version=version,
+)
+
+app.include_router(prefix=f"/api/{version}/books", tags=['books'])
+```
+
+Firstly, a variable called `version` has been introduced to hold the API version. Next, we import the `book_router` created in the previous example. Using our FastAPI instance, we include all endpoints created with it by calling the `include_router` method.
+
+Arguments added to the FastAPI instance are:
+
+- `title`: The title of the API.
+- `description`: The description of the API.
+- `version`  : The version of the API.
+
+While these arguments may not be particularly useful at present, they become valuable when we explore API documentation with **OpenAPI**.
+
+Furthermore, we added the following arguments to the include_router method:
+
+- `prefix`: The path through which all related endpoints can be accessed. In our case, it's named the /{version}/books prefix, resulting in /v1/books or /v2/books based on the application version. This implies that all book-related endpoints can be accessed using http://localhost:8000/api/v1/books.
+
+- `tags`: The list of tags associated with the endpoints that fall within a given router.
+
+Note:
+
+The current organization of our API is as follows:
+| Endpoint	| Method |	Description |
+|-----------|--------|--------------|
+| /api/v1/books |	GET  | Read all books |
+| /api/v1/books |	POST | Create a book |
+| /api/v1/book/{book_id} |	GET |	Get a book by ID |
+| /api/v1/book/{book_id} |	PATCH |	Update a book by ID |
+| /api/v1/book/{book_id} |	DELETE |	Delete a book by ID |
