@@ -1,8 +1,15 @@
 # FastAPI Beyond CRUD (Chapter Three)
 
-## Creating a Simple CRUD API
+Contents of the chapter
+- [What is CRUD?](#what-is-crud)
+- [Using HTTP GET to read all books](#reading-all-books-http-get-request)
+- [Using HTTP GET to retrieve a single Book](#read-one-book-http-get-request)
+- [Using HTTP POST to create a book](#adding-a-new-book-using-http-post)
+- [Using HTTP PATCH to update a book](#update-a-book-http-patch-request)
+- [Using HTTP DELETE to delete a book](#delete-a-book-http-delete-request)
 
-### What is CRUD?
+
+## What is CRUD?
 
 CRUD represents the four basic data operations:
 
@@ -25,8 +32,9 @@ CRUD represents the four basic data operations:
   - _Objective:_ Remove data.
   - _Action:_ Delete a record or entity.
 
-CRUD operations are fundamental in data management, commonly used in applications dealing with data persistence. In FastAPI Beyond CRUD, the focus is on extending FastAPI capabilities beyond typical CRUD applications, exploring advanced features and use cases. But before diving into such aspects, let us build a simple CRUD API using FastAPI.
+CRUD operations are fundamental in data management, commonly used in applications dealing with data persistence. In **FastAPI Beyond CRUD**, the focus is on extending FastAPI capabilities beyond typical CRUD applications, exploring advanced features and use cases. But before diving into such aspects, let us build a simple CRUD API using FastAPI.
 
+### A simple CRUD API implementation
 Our simple CRUD API will have a few endpoints to perform CRUD operations on a simple in-memory database of books. Here's a list of endpoints that we shall have in our CRUD API.
 
 | Endpoint        | Method | Description         |
@@ -170,9 +178,9 @@ async def delete_book(book_id: int):
 
 ```
 
-## What happened?
+## Reading All Books (HTTP GET request)
 
-The first API endpoint is `/books` and it's purpose is to read all the books in the database and return a list of them. we achive that by creating a function `read_books` that will return our `books` list.
+The initial API endpoint is `/books`, designed to retrieve all the books stored in the database and present them in a list. This is accomplished by implementing the `read_books` function, which, when invoked, returns the `books` list.
 
 ```python
 @app.get("/books")
@@ -180,24 +188,27 @@ async def read_books():
     return books
 ```
 
-FastAPI really makes it easy to return any JSON serializable object in a response.
+FastAPI significantly simplifies the process of returning any JSON serializable object as a response.
 
 ### Note
 
-JSON (JavaScript Object Notation) serialization is the process of converting a data structure or object from a programming language (such as Python, JavaScript, or others) into a JSON-formatted string. This string representation can then be transmitted over a network or stored in a file, and later deserialized back into the original data structure.
+JSON (JavaScript Object Notation) serialization involves transforming a data structure or object from a programming language (such as Python, JavaScript, or others) into a JSON-formatted string. This string representation can then be transmitted over a network or stored in a file, subsequently allowing deserialization back into the original data structure.
 
-For Python, the following data types are serializable.
+In Python, the following data types are serializable:
 
 - Lists
 - Dictionaries
 - Strings
 - Tuples
-- Bools
+- Booleans
 - None
 
-So this makes it possible for us to just return a list of our book objects when we make a `GET` request to `http://localhost:8000/books` as showed below
-![list books](./imgs/img5.png)
+This capability enables us to effortlessly respond with a list of book objects when issuing a `GET` request to `http://localhost:8000/books`, as illustrated below:
 
+![List of Books](./imgs/img5.png)
+
+
+## Read one Book (HTTP GET request)
 We retrieve a single book by its ID by calling the `read_book` function whenever we make a request to `book/{book_id}`. Note that the {book_id} is refered to as a **path parameter** that is even passed to the `read_book function to find the book with the given ID. All we have done is to iterate through the book list, and check if a book exists in the list with the given ID. If not found,, we shall return a message indicating that.
 
 ```python
@@ -211,64 +222,56 @@ async def read_book(book_id: int):
 
 ![get a book](./imgs/img6.png)
 
-In order to add a new book to our system, we must first define a schema class. FastAPI leverages Pydantic for creating such schema classes, offering robust data validation and serialization capabilities for API endpoints. This ensures that incoming data is validated according to predefined rules, and the data objects exchanged with the database are efficiently serialized.
 
-Let's take a closer look at the process. We'll create a new schema class for books, aligning its structure with the attributes found in our existing list of books. This schema class will be created in a file named schemas.py. The code for our `BookSchema` class is as follows:
+## Adding a New Book (Using HTTP POST)
+
+To insert a new book into our system, we need to create a blueprint for the book's details. FastAPI uses a tool called Pydantic for this, making sure the data follows specific rules. This helps validate the information we receive and ensures smooth communication with the database.
+
+Let's break down the process step by step. First, we define a class for our book details, called `BookSchema`, and save it in a file named `schemas.py`:
 
 ```python
 from pydantic import BaseModel
 from datetime import datetime
 
 class BookSchema(BaseModel):
-    id:int
-    title:str
-    author:str
-    publisher:str
+    id: int
+    title: str
+    author: str
+    publisher: str
     published_date: datetime
-    page_count:int
-    language:str
+    page_count: int
+    language: str
 ```
 
-The class `BookSchema` defines a Pydantic model that inherits from `BaseModel`. Pydantic is a data validation library that provides a concise way to define the schema classes using [type annotations](https://peps.python.org/pep-0484/)
+In simpler terms, this class represents a model for a book. It includes information like the book's ID, title, author, publisher, publication date, page count, and language.
 
-The class has the following attributes:
-
-- `id` : The integer unique identifier for the book.
-- `title`: The string title of the book.
-- `author`: The string author of the book.
-- `publisher`: The string publisher of the book.
-- `published_date`: The datetime for when the book was published. It is of type `datetime` from the `datetime` module.
-- `page_count`: The integer number of pages in the book.
-- `language`: The string language in which the book is written.
-
-So the folowing is the endpoint for creating a book, it takes data as expected by the schema we have created in the previous step and appends it to our books list. This adds validation to the data we send to the server.
+Next, we create an endpoint to allow the addition of a new book. This endpoint expects data in the format specified by our `BookSchema`. The provided data is then added to our list of books. This process also ensures that the data sent to the server is valid and secure.
 
 ```python
-@app.post('/books',status_code=201)
+@app.post('/books', status_code=201)
 async def create_book(book: BookSchema):
     books.append(book)
     return book
 ```
 
-The `BookSchema` class implements validation for the book data we send to the server in this POST request. As a result, summitting invalid data will result into validation errors as shown in the figure below. This error will show up when no data is sent to the server.
+The `BookSchema` class ensures that the data sent to the server follows the expected format. If invalid data is submitted, the server responds with errors, as shown below when no data is sent:
 
-![validation for no data being sent to the server](./imgs/img7.png)
+![Validation for no data being sent to the server](./imgs/img7.png)
 
+Similarly, submitting incomplete or incorrect data results in validation errors:
 
-Let us also try to submit invalid data to the server that has a field missing.
+![Validation for incomplete or invalid data](./imgs/img8.png)
 
-![Validation for invalid data being sent to the server](./imgs/img8.png)
+On the other hand, sending valid JSON data to the server creates a new book record. The response includes a 201 Created status code:
 
-Finally, let us submit valid JSON data to the server. This will created a new book record and as we can notice, a 201 Created status code will be returned in our response as shown below.
-
-![Successful creation od the new book record with valid JSON data](./imgs/img9.png)
+![Successful creation of a new book record with valid JSON data](./imgs/img9.png)
 
 ### Note
-It is so important that you return the correct HTTP status code in every response, to achieve that, you should provide the `status_code` parameter every time you create an endpoint as shown below. The default status code will always be the 200 status code returned by the server in case of a successful response.
-```python
-@app.post('/books',status_code=201)
-```
 
+It's crucial to use the right HTTP status code in each response. In this case, we use `status_code=201` to indicate the successful creation of a resource. The default status code is 200, which represents a standard successful response.
+
+
+## Update a book (HTTP PATCH request)
 Let us look at the update endpoint. This is quite similar to the create endpoint as it allows data to be sent to the server via the **PATCH** HTTP method. But it also requires we provide the `book_id` of the book that we will be updating. we loop through the book list and find the book that matches the `book_id` as shown below:
 
 ```python
@@ -305,6 +308,8 @@ Let us confirm if our book record has been updated successfully. To do so we are
 
 ![retrieve updated book record](./imgs/img11.png)
 
+
+## Delete a book (HTTP Delete request)
 Let us finally look at deletion of the book record. This is carried out in the following example:
 
 ```python
