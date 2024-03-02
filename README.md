@@ -2,6 +2,8 @@
 
 This is source code for a video tutorial series we will cover on FastAPI. THis will focus on fastapi API Development beyond the CRUD stuff.
 
+A comprehensive guide is available [here](./docs/index.md).
+
 ## Table of Contents
 - [Introduction](#introduction)
 - [Getting Started](#getting-started)
