@@ -1,7 +1,14 @@
 # FastAPI Beyond CRUD (Chapter Four)
 
 ## Improved Project Structure
+Contents of this chapter are
+- [Current folder structure](#current-folder-structure)
+- [Current code structure](#currrent-code-structure)
+- [Restructuring the folder structure](#restructuring-the-project)
+- [Introduction to FastAPI Routers](#introduction-to-fastapi-routers)
 
+
+### Current folder structure
 So far, our project structure is quite simple:
 
 ```console
@@ -11,6 +18,7 @@ So far, our project structure is quite simple:
 └── schemas.py
 ```
 
+### Currrent code structure
 Additionally, our `main.py` file looks like this:
 
 ```python
@@ -73,6 +81,7 @@ async def delete_book(book_id: int):
             return book
     return {"message": "Book not found"}
 ```
+## Restructuring the project
 
 The problem here is that if we add more code to this file, our code will become messy and hard to maintain. To address this, we need to create a more organized project structure. To start, let's create a new folder called `src`, which will contain an `__init__.py` file to make it a Python package:
 
@@ -197,7 +206,7 @@ async def delete_book(book_id: int):
             return book
     return {"message": "Book not found"}
 ```
-
+## Introduction to FastAPI routers 
 What has been accomplished is the division of our project into modules using routers. FastAPI routers allow easy modularization of our API by grouping related endpoints together. Routers function similarly to FastAPI instances (similar to what we have in `main.py`). As our project expands, we will introduce additional endpoints, and all of them will be organized into modules grouping related functionalities.
 
 Let's enhance our `main.py` file to adopt this modular structure:
@@ -235,7 +244,7 @@ Furthermore, we added the following arguments to the include_router method:
 
 - `tags`: The list of tags associated with the endpoints that fall within a given router.
 
-Note:
+### Note:
 
 The current organization of our API is as follows:
 | Endpoint	| Method |	Description |
