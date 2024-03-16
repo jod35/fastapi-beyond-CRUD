@@ -1,6 +1,6 @@
 # Chapter Four: Databases with SQLModel in FastAPI
 
-In the previous chapter, we developed a functional CRUD API that operated on a simple in-memory database, represented by a Python list. However, in real-world applications, it's essential to use a persistent database to store all necessary data.
+In the preceding chapter, we developed a functional CRUD API that operated on a simple in-memory database, represented by a Python list. However, in real-world applications, it's essential to use a persistent database to store all necessary data.
 
 ## Choosing a Database for FastAPI
 
@@ -57,7 +57,7 @@ Throughout this course, I'll utilize [Neon](https://neon.tech/), a free fully ma
 
 ![image of Neon](./imgs/neon.png)
 
-Once you have created your free account on Neon, you can create a new project and in it you will also create you new database.
+Once you have created your free account on Neon, you can create a new project and in it, you will also create your new database.
 
 ![Create a new project and database](./imgs/neon2.png)
 
@@ -65,10 +65,12 @@ Once you have created your database, you can then go ahead and copy your connect
 ![Copy your connection details](./imgs/neon3.png)
 
 
-After, Create a file called `.env` in which we shall store our project oncifgurations as secrets. (This file is important and should not be added to version control) In your `.env` file, paste the database connection URL you have obtained from Neon. We are going to  create an environment variable called `DATABASE_URL` with the value of our URL.
+After, Create a file called `.env` in which we shall store our project configurations as secrets. (This file is important and should not be added to version control) In your `.env` file, paste the database connection URL you have obtained from Neon. We are going to create an environment variable called `DATABASE_URL` with the value of our URL.
 
-
-![Database URL Environment variables](./imgs/neon4.png)
+```bash
+# inside .env
+DATABASE_URL=postgresql://bookdb_owner:w8JK2sCASYBc@ep-rough-block-a554nxl6.us-east-2.aws.neon.tech/bookdb?sslmode=require
+```
 
 
 At this point, your folder structure needs to look something like this:
@@ -87,17 +89,17 @@ At this point, your folder structure needs to look something like this:
         └── book_data.py
 ```
 
-With that in place, we can now set up our configurations wo that we can read them out from anywhere within our application. Let us begine by creating a `config.py` file that contains the configuration variables that will be used in this series.
+With that in place, we can now set up our configurations so that we can read them out from anywhere within our application. Let us begin by creating a `config.py` file that contains the configuration variables that will be used in this series.
 
-We are gonna rely on Pydantic to read our environment variables. Pydantic alone will not help us, we shall need to install `pydantic-settings`, a library that  is based on Pydantic to help us with with the specific role of reading environment variables from our `.env` file. 
+We are going to rely on Pydantic to read our environment variables. Pydantic alone will not help us; we shall need to install `pydantic-settings`, a library that is based on Pydantic to help us with the specific role of reading environment variables from our `.env` file. 
 
 
 So let us start by installing 
 
-````bash
+```bash
 $ pip install pydantic-settings
-````
-After installing `pydantic-settings`, let us now go ahead and create a file called `config.py` at the root of our project.  Inside that file, add the following code.
+```
+After installing `pydantic-settings`, let us now go ahead and create a file called `config.py` at the root of our project. Inside that file, add the following code.
 
 
 ```python
@@ -113,17 +115,41 @@ class Settings(BaseSettings):
 
 In the provided code snippet, we've performed the following actions:
 
-1. Imported the `BaseSettings` class from `pydantic_settings`.
-2. Created a subclass called `Settings`, inheriting from `BaseSettings`.
-3. Defined an attribute named `DATABASE_URL` with a type annotation of `str`.
-4. Set a default value of `"sqlite:///db.sqlite3"` for `DATABASE_URL`.
+1. We are importing the `BaseSettings` class from `pydantic_settings`.
+2. Creating a subclass called `Settings`, inheriting from `BaseSettings`.
+3. Defining an attribute named `DATABASE_URL` with a type annotation of `str`.
+4. Setting a default value of `"sqlite:///db.sqlite3"` for `DATABASE_URL`.
 
 This configuration allows us to read the `DATABASE_URL` from the environment variables. If it's not provided, it falls back to the default value, `"sqlite:///db.sqlite3"`.
 
-Now, let's see how this setup works. We'll open a Python interpreter shell to test it:
+Let's observe how this configuration operates. We'll initiate a Python interpreter shell for testing:
 
 ```bash
 $ python3
+Python 3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from config import Settings
+>>> settings = Settings()
+>>> settings.DATABASE_URL
+'postgresql://bookdb_owner:w8JK2sCASYBc@ep-rough-block-a554nxl6.us-east-2.aws.neon.tech/bookdb?sslmode'
+>>> 
+```
+
+In the above demonstration, we start by importing the `Settings` class from the `config.py` file. Subsequently, we instantiate a `settings` object. Utilizing this `settings` object, we access and retrieve the `DATABASE_URL` setting. Upon calling it, our database URL will be displayed in the console. Note that this shall work because we currently have the `DATABASE_URL` setting in our `.env` file.
+
+Once this has been implemented, let us then add the following line to `config.py`.
+```python
+class Settings(BaseSettings):
+    DATABASE_URL: str = "sqlite:///db.sqlite3"
+
+# add this line    
+settings = Settings()
+```
+We add this line so that we don't have to create a new instance of our `Settings` class whenever we shall need to access environment variables. From now on, we shall shall just have to import the `settings` variable and use it.
+
+Alright, let us now connect to our database and also create our table in it. Let us install `sqlmodel`.
+```bash
+$ pip install sqlmodel
 ```
 
 
