@@ -68,6 +68,65 @@ Once you have created your database, you can then go ahead and copy your connect
 After, Create a file called `.env` in which we shall store our project oncifgurations as secrets. (This file is important and should not be added to version control) In your `.env` file, paste the database connection URL you have obtained from Neon. We are going to  create an environment variable called `DATABASE_URL` with the value of our URL.
 
 
+![Database URL Environment variables](./imgs/neon4.png)
+
+
+At this point, your folder structure needs to look something like this:
+```console
+|__ .env
+├── env/
+├── main.py
+├── requirements.txt
+└── schemas.py
+└── src/
+    └── __init__.py
+    └── books/
+        └── __init__.py
+        └── routes.py
+        └── schemas.py
+        └── book_data.py
+```
+
+With that in place, we can now set up our configurations wo that we can read them out from anywhere within our application. Let us begine by creating a `config.py` file that contains the configuration variables that will be used in this series.
+
+We are gonna rely on Pydantic to read our environment variables. Pydantic alone will not help us, we shall need to install `pydantic-settings`, a library that  is based on Pydantic to help us with with the specific role of reading environment variables from our `.env` file. 
+
+
+So let us start by installing 
+
+````bash
+$ pip install pydantic-settings
+````
+After installing `pydantic-settings`, let us now go ahead and create a file called `config.py` at the root of our project.  Inside that file, add the following code.
+
+
+```python
+# inside the config.py
+from pydantic_settings import BaseSettings
+
+
+class Settings(BaseSettings):
+    DATABASE_URL: str = "sqlite:///db.sqlite3"
+```
+
+### Explanation:
+
+In the provided code snippet, we've performed the following actions:
+
+1. Imported the `BaseSettings` class from `pydantic_settings`.
+2. Created a subclass called `Settings`, inheriting from `BaseSettings`.
+3. Defined an attribute named `DATABASE_URL` with a type annotation of `str`.
+4. Set a default value of `"sqlite:///db.sqlite3"` for `DATABASE_URL`.
+
+This configuration allows us to read the `DATABASE_URL` from the environment variables. If it's not provided, it falls back to the default value, `"sqlite:///db.sqlite3"`.
+
+Now, let's see how this setup works. We'll open a Python interpreter shell to test it:
+
+```bash
+$ python3
+```
+
+
 
 **Previous**: [Improved Project Structure Using Routers](./chapter4.md)
 
