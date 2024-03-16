@@ -1,6 +1,6 @@
 # FastAPI Beyond CRUD (Chapter Four)
 
-## Improved Project Structure
+## Improved Project Structure Using Routers
 Contents of this chapter are
 - [Current folder structure](#current-folder-structure)
 - [Current code structure](#currrent-code-structure)
@@ -251,6 +251,12 @@ The current organization of our API is as follows:
 |-----------|--------|--------------|
 | /api/v1/books |	GET  | Read all books |
 | /api/v1/books |	POST | Create a book |
-| /api/v1/book/{book_id} |	GET |	Get a book by ID |
-| /api/v1/book/{book_id} |	PATCH |	Update a book by ID |
-| /api/v1/book/{book_id} |	DELETE |	Delete a book by ID |
+| /api/v1/books/{book_id} |	GET |	Get a book by ID |
+| /api/v1/books/{book_id} |	PATCH |	Update a book by ID |
+| /api/v1/books/{book_id} |	DELETE |	Delete a book by ID |
+
+
+**Previous** [Improved Project Structure Using Routers](./chapter4.md)
+
+
+**Next** [Next Chapter](./chapter5.md)

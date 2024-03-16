@@ -335,4 +335,4 @@ And just like that, we have created a CRUD REST API using a simple in memory dat
 
 **Previous** [Creating a Simple Web Server](./index.md)
 
-**Next** [Next Chapter](./chapter4.md)
+**Next** [Improved Project Structure Using Routers](./chapter4.md)
