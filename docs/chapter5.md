@@ -104,11 +104,15 @@ After installing `pydantic-settings`, let us now go ahead and create a file call
 
 ```python
 # inside the config.py
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = "sqlite:///db.sqlite3"
+    DATABASE_URL: str ="sqlite:///db.sqlite3"
+
+    model_config = SettingsConfigDict(
+        env_file=".env"
+    )
 ```
 
 ### Explanation:
@@ -119,6 +123,7 @@ In the provided code snippet, we've performed the following actions:
 2. Creating a subclass called `Settings`, inheriting from `BaseSettings`.
 3. Defining an attribute named `DATABASE_URL` with a type annotation of `str`.
 4. Setting a default value of `"sqlite:///db.sqlite3"` for `DATABASE_URL`.
+5. To modify our configuration to read from the `.env` file, we modified the `model_config` attribute of the `Settings` class which is one to help us with modifying the configuration of any pydantic model class. This is set to an instance of the `SettingsConfigDict` class which enables us to read the configuration from the `.env` file. This is by simply setting the `env_file` argument to the name of the `.env` file.
 
 This configuration allows us to read the `DATABASE_URL` from the environment variables. If it's not provided, it falls back to the default value, `"sqlite:///db.sqlite3"`.
 
@@ -139,8 +144,14 @@ In the above demonstration, we start by importing the `Settings` class from the 
 
 Once this has been implemented, let us then add the following line to `config.py`.
 ```python
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 class Settings(BaseSettings):
-    DATABASE_URL: str = "sqlite:///db.sqlite3"
+    DATABASE_URL: str
+
+    model_config = SettingsConfigDict(
+        env_file=".env"
+    )
 
 # add this line    
 settings = Settings()
@@ -152,7 +163,24 @@ Alright, let us now connect to our database and also create our table in it. Let
 $ pip install sqlmodel
 ```
 
+Once we have `sqlmodel` installed, let us now create a database model using it. to start, we will create a file named models.py inside the `books` directory.
 
+```console
+|__ .env
+├── env/
+├── main.py
+├── requirements.txt
+└── schemas.py
+└── src/
+    └── __init__.py
+    └── books/
+        └── __init__.py
+        └── routes.py
+        |__ models.py
+        └── schemas.py
+        └── book_data.py
+```
+Inside `models.py`, add the following code. 
 
 **Previous**: [Improved Project Structure Using Routers](./chapter4.md)
 
