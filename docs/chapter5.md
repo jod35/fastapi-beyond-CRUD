@@ -1,4 +1,16 @@
-# Chapter Four: Databases with SQLModel in FastAPI
+# FastAPI Beyond CRUD (Chapter Five)
+
+## Databases with SQLModel
+Contents of this chapter are
+- [Choosing a database for FastAPI](#current-folder-structure)
+- [Choosing a Database for FastAPI](#choosing-a-database-for-fastapi)
+- [Explaining Object-Relational Mappers (ORMs)](#explaining-an-object-relational-mapper-orm)
+- [Creating a Database (PostgreSQL)](#creating-a-database)
+- [Settings Management With Pydantic](#settings-management-with-pydantic)
+- [Creating database models with SQLModel](#creating-database-models-with-sqlmodel)
+- [Connecting to databases](#connecting-to-databases)
+- [Lifespan events in FastAPI](#lifespan-events-in-fastapi)
+- [Creating database tables](#creating-database-tables)
 
 In the preceding chapter, we developed a functional CRUD API that operated on a simple in-memory database, represented by a Python list. However, in real-world applications, it's essential to use a persistent database to store all necessary data.
 
@@ -71,7 +83,7 @@ At this point, your folder structure needs to look something like this:
         └── schemas.py
         └── book_data.py
 ```
-### Setting Up Our Settings
+### Settings Management With Pydantic
 With that in place, we can now set up our configurations so that we can read them out from anywhere within our application. Let us begin by creating a `config.py` file that contains the configuration variables that will be used in this series.
 
 We are going to rely on Pydantic to read our environment variables. Pydantic alone will not help us; we shall need to install `pydantic-settings`, a library that is based on Pydantic to help us with the specific role of reading environment variables from our `.env` file. 
@@ -143,7 +155,7 @@ Config = Settings()
 We add this line so that we don't have to create a new instance of our `Settings` class whenever we shall need to access environment variables. From now on, we shall shall just have to import the `Config` variable and use it.
 
 
-## Creating our database model with SQLModel
+## Creating database models with SQLModel
 
 Alright, let us now connect to our database and also create our table in it. Let us install `sqlmodel`.
 ```bash
@@ -218,7 +230,7 @@ IN the above code, we have defined a database model using `SQLModel`. Here are t
     - def __repr__(self) -> str: This is a special method that defines how instances of the `Book` class are represented as strings. In this case, it returns a string containing the title of the book, enclosed in angle brackets and preceded by `Book`.
 
 
-## Creating a database connection
+## Connecting to databases
 For now, our current directory structure looks something like this.
 ```
 ├── README.md
@@ -305,7 +317,7 @@ async def initdb():
 
 
 
-## Introduction to Lifespan events in FastAPI
+## Lifespan events in FastAPI
 
 In FastAPI, we are free to define logic we may want to run before the application starts getting requests and also when the application stops receiving them. THis is very important in scenarios where the cost of running such logic may be expensive and may cause a poor user experience. Such include database connections, loading AI models and so on. For our purpose, we are going to connect to the database before the application starts. If this doesn't make sense, let us begin by looking at a small example. 
 
@@ -400,7 +412,7 @@ INFO:     Waiting for application startup.
 This code establishes a connection to the database and executes a SELECT statement, which will return the string "Hello World" as demonstrated in the provided output.
 
 
-### Creating tables in the database
+## Creating database tables
 Let's update the code in `src/db/main.py` to incorporate our custom lifespan event into the database model, utilizing the `Book` model. We'll then utilize SQLmodel to generate the necessary database tables based on this model.
 
 ```python
@@ -467,8 +479,8 @@ CREATE TABLE books (
 ```
 Running the code above shall allow us to create the table in the database also logging the SQL query in the terminal as shown above. 
 
-
-
+### Conclusion
+The database for storing our book data is now up and running. Skipping ahead, I've outlined the CRUD actions for our persistent database in the next chapter.
 
 
 **Previous**: [Improved Project Structure Using Routers](./chapter4.md)
