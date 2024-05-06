@@ -432,12 +432,41 @@ In the above code, we began with importing the `Book` model from `src/books/mode
 
 ```
 
-An async context manager is utilized with `engine.begin()` which allows us to create a transactional context to operate on our database. Inside the context manager, we run `conn.run_sync(SQLModel.metadata.create_all)`.
+In this code snippet, we utilize an asynchronous context manager with `engine.begin()`, enabling us to create a transactional context to interact with our database. Within this context, we execute `conn.run_sync(SQLModel.metadata.create_all()`.
 
-`SQLModel.metadata` refers to all the metadata associated with SQLModel and `the create_all()` function shall create any tables present in the that `metadata` object that do not exist in the database. 
+Here, `SQLModel.metadata` encompasses all the metadata linked with SQLModel. By invoking the `create_all()` method on this metadata object, any tables present in the metadata but absent in the database will be created.
 
-    Note: conn.run_sync() is an async function that we utilize to run sync functions 
-    such as `SQLModel.metadata.create_all`
+**Note** 
+- `conn.run_sync()` is an asynchronous function that we utilize to run synchronous functions such as `SQLModel.metadata.create_all()`.
+
+
+With that said, let us save the file and have a look at our terminal output. 
+```console
+INFO:     Waiting for application startup.
+2024-05-06 12:13:21,042 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2024-05-06 12:13:21,042 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("books")
+2024-05-06 12:13:21,042 INFO sqlalchemy.engine.Engine [raw sql] ()
+2024-05-06 12:13:21,043 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("books")
+2024-05-06 12:13:21,043 INFO sqlalchemy.engine.Engine [raw sql] ()
+2024-05-06 12:13:21,044 INFO sqlalchemy.engine.Engine 
+CREATE TABLE books (
+        uid UUID NOT NULL, 
+        title VARCHAR NOT NULL, 
+        author VARCHAR NOT NULL, 
+        publisher VARCHAR NOT NULL, 
+        published_date VARCHAR NOT NULL, 
+        page_count INTEGER NOT NULL, 
+        language VARCHAR NOT NULL, 
+        PRIMARY KEY (uid), 
+        UNIQUE (uid)
+)
+
+
+2024-05-06 12:13:21,044 INFO sqlalchemy.engine.Engine [no key 0.00014s] ()
+2024-05-06 12:13:21,086 INFO sqlalchemy.engine.Engine COMMIT
+```
+Running the code above shall allow us to create the table in the database also logging the SQL query in the terminal as shown above. 
+
 
 
 
