@@ -308,6 +308,8 @@ FastAPI provides a dependency injection mechanism that allows us share state amo
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
+... # rest of main.py
+
 async def get_session() -> AsyncSession:
     """Dependency to provide the session object"""
     async_session = sessionmaker(
