@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from src.book_data import books
-from src.schemas import BookSchema,BookUpdateSchema
+from src.books.book_data import books
+from src.books.schemas import BookSchema,BookUpdateSchema
 
 book_router = APIRouter()
 
