@@ -186,24 +186,26 @@ from sqlmodel import SQLModel, Field, Column
 import sqlalchemy.dialects.postgresql as pg
 import uuid
 
-class Book(SQLModel, table=True):
+class Book(SQLModel , table=True):
     __tablename__ = "books"
+
     uid:uuid.UUID = Field(
         sa_column=Column(
             pg.UUID,
             primary_key=True,
-            default=uuid.uuid4,
             unique=True,
-            nullable=False,
+            nullable=False
         )
     )
 
-    title:str
-    author: str 
+    title: str
+    author: str
     publisher: str
-    published_date: str 
-    page_count: int 
-    language: str
+    published_date: str
+    page_count: int
+    language:str
+    created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+    updated_at:datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
 
     def __repr__(self) -> str:
         return f"<Book {self.title}>"
@@ -226,6 +228,8 @@ IN the above code, we have defined a database model using `SQLModel`. Here are t
         To make our primary key store UUIDs, we have chosen to use the PostgreSQL UUID type and we achive this by using the sa_column argument in the Field function. Using SQLALchemy's Column class we then specify the type of the field.
     
     - `title`, `author`, `publisher`, `published_date`, `page_count`, `language`: These attributes represent various properties of a book, such as title, author, publisher, etc. They are all specified as strings (str) or integers (int) and will be columns in the database table.
+
+    - `created_at` and `updated_at` represent timestamps at which a book record was created or updated. Note that we are also going in detail about defining the PostgreSQL column types as `pg.TIMESTAMP`. We also specify that we want to keep track of the 
 
     - def __repr__(self) -> str: This is a special method that defines how instances of the `Book` class are represented as strings. In this case, it returns a string containing the title of the book, enclosed in angle brackets and preceded by `Book`.
 
@@ -469,6 +473,8 @@ CREATE TABLE books (
         published_date VARCHAR NOT NULL, 
         page_count INTEGER NOT NULL, 
         language VARCHAR NOT NULL, 
+        created_at TIMESTAMP, 
+        updated_at TIMESTAMP, 
         PRIMARY KEY (uid), 
         UNIQUE (uid)
 )

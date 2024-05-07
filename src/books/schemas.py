@@ -18,6 +18,15 @@ class BookUpdateSchema(BaseModel):
     language:str
 
 
+class BookCreateModel(BaseModel):
+    """
+        This class is used to validate the request when creating or updating a book
+    """
+    title: str
+    author: str
+    isbn: str
+    description: str
+
 # "id": 1,
 # "title": "Think Python",
 # "author": "Allen B. Downey",

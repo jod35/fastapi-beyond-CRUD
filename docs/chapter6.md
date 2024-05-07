@@ -10,11 +10,11 @@ Contents of this chapter are
 
 
 ## Creating a service class
-In this chapter, we shall Create a service file, in which we shall add all logic that is necessary for implementing the **CRUD** using our PostgreSQL database. The reasoning behind this is to separate the database logic from our API routes making our code simpler to read and maintain.
+In this chapter, we will focus on creating a dedicated service file to house the essential logic required for executing CRUD operations using our PostgreSQL database. The primary objective is to abstract away database interactions from our API routes, enhancing code readability and maintainability.
 
-We shall create a class on which all methods for managing our book data will be called.
+We will construct a class within this service file, which will serve as a centralized point for invoking all methods related to managing our book data.
 
-Let us begin creating the file service.py inside `src/books/`
+To initiate this process, let's commence by creating the file `service.py` within the `src/books/` directory.
 ```python
 
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -97,6 +97,19 @@ To create a new book record, we begin by initializing a new instance of the Book
 Following this, we utilize our `session` object to add the new book record to the database via `session.add`. Finally, we commit the transaction to ensure that the changes are persisted in the database, accomplished with `session.commit`, not forgetting to return the newly created book record.
 
 Before we proceed, we need to add the `BookCreateSchema` class to `src/books/schemas.py` 
+
+Let us add the `BookCreateSchema` class to `src/books/schemas.py`.
+```python
+# inside src/books/schemas.py
+class BookCreateModel(BaseModel):
+    """
+        This class is used to validate the request when creating or updating a book
+    """
+    title: str
+    author: str
+    isbn: str
+    description: str
+```
 
 
 ### Retrieve a book by its uid
@@ -301,7 +314,12 @@ class BookService:
 ## Dependency Injection
 Now that we have created the `BookService` class, we need to create the `session` object that we shall use a dependency in every API route that shall interact with the database in any way.
 
-FastAPI provides a dependency injection mechanism that allows us share state among many different api routes. Let us see how we can do this.
+FastAPI provides a dependency injection mechanism that allows us share state among many different api routes. Let us see how we can do this. Using dependency injection, we can create any Python object and only access it when we need it. Such a Python object is what we refer to as a **dependency**. The function that will need to use the dependency is what we call the dependant function. 
+
+The concept of dependency injection seems to be technical and and so esoteric but it’s a key aspect of FastAPI and is
+surprisingly useful at many levels. Some of the way you may want to use it include the following:
+
+-   
 
 ```python
 # add this to src/db/main.py
@@ -320,13 +338,76 @@ async def get_session() -> AsyncSession:
         yield session
 ```
 
-In the above code, we define an async function called `get_session` that should return an object of the `AsyncSesion` class. This class is what allows us to use an aync DBAPI to interact with the database.
+In the above code, we define an async function called `get_session` that should return an object of the `AsyncSesion` class. This class is what allows us to use an aync DBAPI to interact with the database. That is the object we shall create all `BookService` objects with.
 
 
 
 
-Let us go to the `src/books/routes.py` and modify it to make calls to the methods we have so far defined inside the `BookService` class.
+Now that we have an understanding of how we shall get our session, let us go to the `src/books/routes.py` and modify it to make calls to the methods we have so far defined inside the `BookService` class.
 
 ```python
+# inside src/books/routes.py
+from fastapi import APIRouter, Depends
+from sqlmodel.ext.asyncio.session import AsyncSession
+from src.books.book_data import books
+from src.books.schemas import BookSchema, BookUpdateSchema
+from src.db.main import get_session
+from .service import BookService
 
+book_router = APIRouter()
+
+
+@book_router.get("/")
+async def read_books(session: AsyncSession = Depends(get_session)):
+    """Read all books"""
+    books = await BookService(session).get_all_books()
+    return books
+
+
+@book_router.get("/{book_id}")
+async def read_book(book_uid: str, session: AsyncSession = Depends(get_session)):
+    """Read a book"""
+    book = await BookService(session).get_book(book_uid)
+    return book
+
+
+@book_router.post("/", status_code=201)
+async def create_book(book: BookSchema, session: AsyncSession = Depends(get_session)):
+    """Create a new book"""
+    new_book = await BookService(session).create_book(book)
+
+    return new_book
+
+
+@book_router.patch("/{book_id}")
+async def update_book(
+    book_uid: int,
+    update_data: BookUpdateSchema,
+    session: AsyncSession = Depends(get_session),
+):
+    """ "update book"""
+
+    updated_book = await BookService(session).update_book(book_uid, update_data)
+
+    return updated_book
+
+
+@book_router.delete("/{book_id}", status_code=204)
+async def delete_book(book_uid: int, session: AsyncSession = Depends(get_session)):
+    """delete a book"""
+    await BookService(session).delete_book(book_uid)
+    return {}
 ```
+
+We've made minimal changes to the file but have introduced some updates that I'll outline here. Let's start by examining the dependency injection we've integrated. Take note of how we've included the following code in each route handler function.
+```python
+session: AsyncSession = Depends(get_session)
+```
+What we're accomplishing here is the sharing of the `session` generated by calling the `get_session` function we defined earlier in this chapter.
+
+Once the `session` is established, we proceed to instantiate the `BookService` class. This instance allows us to utilize its methods for performing various **CRUD** operations as needed.
+
+```python
+    books = await BookService(session).get_all_books()
+```
+We instantiate the `BookService` function to invoke its `get_all_books()` method, supplying the session as a dependency to the route handler that includes the above code.
