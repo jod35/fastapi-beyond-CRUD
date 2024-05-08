@@ -258,5 +258,4 @@ The current organization of our API is as follows:
 
 **Previous** [Improved Project Structure Using Routers](./chapter4.md)
 
-
-**Next** [Next Chapter](./chapter5.md)
+**Next** [Databases with SQLModel](./chapter5.md)
