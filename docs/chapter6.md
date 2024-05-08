@@ -314,13 +314,15 @@ class BookService:
 ## Dependency Injection
 Now that we have created the `BookService` class, we need to create the `session` object that we shall use a dependency in every API route that shall interact with the database in any way.
 
-FastAPI provides a dependency injection mechanism that allows us share state among many different api routes. Let us see how we can do this. Using dependency injection, we can create any Python object and only access it when we need it. Such a Python object is what we refer to as a **dependency**. The function that will need to use the dependency is what we call the dependant function. 
+Dependency injection in FastAPI allows for the sharing of state among multiple API routes by providing a mechanism to create Python objects, referred to as **dependencies**, and accessing them only when necessary within dependant functions. While the concept may initially seem technical and esoteric, it is a fundamental aspect of FastAPI that proves remarkably beneficial across various scenarios. Interestingly, we often employ dependency injection without realizing it, demonstrating its widespread usefulness. Some potential applications include:
 
-The concept of dependency injection seems to be technical and and so esoteric but it’s a key aspect of FastAPI and is
-surprisingly useful at many levels. Some of the way you may want to use it include the following:
+- Gathering input parameters for HTTP requests (Path and query parameters)
+- Validating parameters inputs
+- Checking authentication and authorization (we shall look at this in coming chapters)
+- Emitting logs and metrics e.t.c.
 
--   
 
+Let us create our first dependency:
 ```python
 # add this to src/db/main.py
 from sqlmodel.ext.asyncio.session import AsyncSession
