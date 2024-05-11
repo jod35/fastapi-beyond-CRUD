@@ -10,14 +10,14 @@ async def lifespan(app: FastAPI):
     yield
     print("server is stopping")
 
-
+version = 'v1'
 
 app = FastAPI(
+    title='Bookly',
+    description='A RESTful API for a book review service',
+    version=version,
     lifespan=lifespan
 )
 
-app.include_router(
-    book_router,
-    prefix="/books",
-    tags=['books']
-)
+
+app.include_router(book_router,prefix=f"/api/{version}/books", tags=['books'])

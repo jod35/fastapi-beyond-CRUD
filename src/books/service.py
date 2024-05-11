@@ -1,7 +1,7 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from .models import Book
-from .schemas import BookCreateModel
-from sqlmodel import select
+from .schemas import BookCreateSchema
+from sqlmodel import select, desc
 
 
 class BookService:
@@ -19,13 +19,13 @@ class BookService:
         Returns:
             list: list of books
         """
-        statement = select(Book).order_by(Book.created_at)
+        statement = select(Book).order_by(desc(Book.created_at))
 
         result = await self.session.exec(statement)
 
         return result.all()
 
-    async def create_book(self, book_create_data: BookCreateModel):
+    async def create_book(self, book_create_data: BookCreateSchema):
         """
         Create a new book
 
@@ -58,7 +58,7 @@ class BookService:
 
         return result.first()
 
-    async def update_book(self, book_uid: str, book_update_data: BookCreateModel):
+    async def update_book(self, book_uid: str, book_update_data: BookCreateSchema):
         """Update a book
 
         Args:

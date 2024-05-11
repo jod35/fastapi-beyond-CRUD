@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.books.book_data import books
-from src.books.schemas import BookSchema, BookUpdateSchema
+from src.books.schemas import BookSchema, BookUpdateSchema, BookCreateSchema
 from src.db.main import get_session
 from .service import BookService
 
@@ -15,7 +15,7 @@ async def read_books(session: AsyncSession = Depends(get_session)):
     return books
 
 
-@book_router.get("/{book_id}")
+@book_router.get("/book/{book_uid}")
 async def read_book(book_uid: str, session: AsyncSession = Depends(get_session)):
     """Read a book"""
     book = await BookService(session).get_book(book_uid)
@@ -23,16 +23,16 @@ async def read_book(book_uid: str, session: AsyncSession = Depends(get_session))
 
 
 @book_router.post("/", status_code=201)
-async def create_book(book: BookSchema, session: AsyncSession = Depends(get_session)):
+async def create_book(book: BookCreateSchema, session: AsyncSession = Depends(get_session)):
     """Create a new book"""
     new_book = await BookService(session).create_book(book)
 
     return new_book
 
 
-@book_router.patch("/{book_id}")
+@book_router.patch("/{book_uid}")
 async def update_book(
-    book_uid: int,
+    book_uid: str,
     update_data: BookUpdateSchema,
     session: AsyncSession = Depends(get_session),
 ):
@@ -43,8 +43,8 @@ async def update_book(
     return updated_book
 
 
-@book_router.delete("/{book_id}", status_code=204)
-async def delete_book(book_uid: int, session: AsyncSession = Depends(get_session)):
+@book_router.delete("/{book_uid}", status_code=204)
+async def delete_book(book_uid: str, session: AsyncSession = Depends(get_session)):
     """delete a book"""
     await BookService(session).delete_book(book_uid)
     return {}
