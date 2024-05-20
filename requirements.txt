@@ -1,5 +1,7 @@
 annotated-types==0.6.0
 anyio==4.3.0
+async-timeout==4.0.3
+asyncpg==0.29.0
 certifi==2024.2.2
 click==8.1.7
 dnspython==2.6.1
@@ -18,7 +20,9 @@ markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
 orjson==3.10.2
+psycopg2-binary==2.9.9
 pydantic==2.7.1
+pydantic-settings==2.2.1
 pydantic_core==2.18.2
 Pygments==2.17.2
 python-dotenv==1.0.1
