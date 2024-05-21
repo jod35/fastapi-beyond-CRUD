@@ -93,12 +93,12 @@ class BookService:
         """
         book = await self.get_book(book_uid=book_uid)
 
-        if not book:
-            return None
-        
-        else:
+        if book is not None:
             await self.session.delete(book)
 
             await self.session.commit()
 
             return {}
+        
+        else:
+            return None

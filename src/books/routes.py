@@ -65,5 +65,11 @@ async def update_book(
 @book_router.delete("/{book_uid}", status_code=204)
 async def delete_book(book_uid: str, session: AsyncSession = Depends(get_session)):
     """delete a book"""
-    await BookService(session).delete_book(book_uid)
-    return {}
+    result = await BookService(session).delete_book(book_uid)
+
+    if result is not None:
+        return {}
+    else:
+        return JSONResponse(
+            content={"error": "book not found"}, status_code=status.HTTP_404_NOT_FOUND
+        )
