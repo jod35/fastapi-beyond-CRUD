@@ -56,7 +56,9 @@ class BookService:
 
         result = await self.session.exec(statement)
 
-        return result.first()
+        book = result.first()
+
+        return book if book else None
 
     async def update_book(self, book_uid: str, book_update_data: BookCreateSchema):
         """Update a book
@@ -69,18 +71,19 @@ class BookService:
             Book: the updated book
         """
 
-        statement = select(Book).where(Book.uid == book_uid)
+        book = await self.get_book(book_uid=book_uid)
 
-        result = await self.session.exec(statement)
+        if book is not None:
 
-        book = result.first()
+            for key, value in book_update_data.model_dump().items():
+                setattr(book, key, value)
 
-        for key, value in book_update_data.model_dump().items():
-            setattr(book, key, value)
+            await self.session.commit()
 
-        await self.session.commit()
-
-        return book
+            return book
+        
+        else:
+            return None
 
     async def delete_book(self, book_uid):
         """Delete a book
@@ -88,11 +91,14 @@ class BookService:
         Args:
             book_uid (str): the UUID of the book
         """
-        statement = select(Book).where(Book.uid == book_uid)
-        result = await self.session.exec(statement)
+        book = await self.get_book(book_uid=book_uid)
 
-        book = result.first()
+        if not book:
+            return None
+        
+        else:
+            await self.session.delete(book)
 
-        await self.session.delete(book)
+            await self.session.commit()
 
-        await self.session.commit()
+            return {}

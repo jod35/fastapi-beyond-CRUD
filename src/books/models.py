@@ -25,7 +25,7 @@ class Book(SQLModel , table=True):
     published_date: date
     page_count: int
     language:str
-
+    description:str
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at:datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
 
