@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlmodel.ext.asyncio.session import AsyncSession
-from src.books.book_data import books
 from src.books.schemas import BookSchema, BookUpdateSchema, BookCreateSchema
-from fastapi.responses import JSONResponse
+from fastapi.exceptions import HTTPException
 from typing import List
 from src.db.main import get_session
 from .service import BookService
@@ -26,8 +25,8 @@ async def read_book(book_uid: str, session: AsyncSession = Depends(get_session))
         return book
 
     else:
-        return JSONResponse(
-            content={"error": "book not found"}, status_code=status.HTTP_404_NOT_FOUND
+        raise HTTPException(
+            detail={"error": "book not found"}, status_code=status.HTTP_404_NOT_FOUND
         )
 
 
@@ -52,13 +51,11 @@ async def update_book(
     updated_book = await BookService(session).update_book(book_uid, update_data)
 
     if not updated_book:
-
-        return JSONResponse(
-            content={"error": "book not found"}, status_code=status.HTTP_404_NOT_FOUND
+        raise HTTPException(
+            detail={"error": "book not found"}, status_code=status.HTTP_404_NOT_FOUND
         )
 
     else:
-
         return updated_book
 
 
@@ -70,6 +67,6 @@ async def delete_book(book_uid: str, session: AsyncSession = Depends(get_session
     if result is not None:
         return {}
     else:
-        return JSONResponse(
-            content={"error": "book not found"}, status_code=status.HTTP_404_NOT_FOUND
+        raise HTTPException(
+            detail={"error": "book not found"}, status_code=status.HTTP_404_NOT_FOUND
         )

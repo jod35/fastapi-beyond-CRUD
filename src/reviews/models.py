@@ -18,15 +18,8 @@ class Review(SQLModel, table=True):
             info={"description": "Unique identifier for the review"},
         ),
     )
-    book_id: uuid.UUID = Field(
-        foreign_key="books.uid"
-    )
-    user_uid:uuid.UUID = Field(
-        foreign_key="user_accounts.uid"
-    )
+    book_id: uuid.UUID = Field(foreign_key="books.uid")
+    user_uid: uuid.UUID = Field(foreign_key="user_accounts.uid")
     rating: float
     review_text: str
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=func.now))
-
-
-    

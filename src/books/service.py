@@ -74,14 +74,13 @@ class BookService:
         book = await self.get_book(book_uid=book_uid)
 
         if book is not None:
-
             for key, value in book_update_data.model_dump().items():
                 setattr(book, key, value)
 
             await self.session.commit()
 
             return book
-        
+
         else:
             return None
 
@@ -99,6 +98,6 @@ class BookService:
             await self.session.commit()
 
             return {}
-        
+
         else:
             return None

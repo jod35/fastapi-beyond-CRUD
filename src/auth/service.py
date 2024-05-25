@@ -1,6 +1,6 @@
 from src.auth.models import User
 from sqlmodel.ext.asyncio.session import AsyncSession
-from src.auth.security import check_password, create_password_hash
+from src.auth.security import create_password_hash
 from src.auth.schemas import UserCreationModel
 from sqlmodel import select, desc
 
@@ -10,6 +10,7 @@ class UserService:
         self.session = session
 
     async def get_user(self, email):
+        """get single user"""
         statement = select(User).where(User.email == email)
 
         result = await self.session.exec(statement)
@@ -19,6 +20,7 @@ class UserService:
         return book if book else None
 
     async def get_all_users(self):
+        """get all users"""
         statement = select(User).order_by(desc(User.created_at))
 
         result = await self.session.exec(statement)
@@ -28,6 +30,7 @@ class UserService:
         return books
 
     async def create_user(self, user_details: UserCreationModel):
+        """create user"""
         user_dict = user_details.model_dump()
 
         password_hash = create_password_hash(user_dict["password"])

@@ -4,13 +4,13 @@ import uuid
 
 
 class UserCreationModel(BaseModel):
-    username:str
-    email:str
-    password:str
-    
+    username: str
+    email: str
+    password: str
+
 
 class UserSchema(BaseModel):
     uid: uuid.UUID
-    username:str
-    email:str
+    username: str
+    email: str
     created_at: datetime
