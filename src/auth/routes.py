@@ -3,8 +3,10 @@ from fastapi.security import HTTPBasic
 from fastapi.exceptions import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.main import get_session
-from src.auth.schemas import UserCreationModel, UserSchema
+from src.auth.schemas import UserCreationModel, UserSchema, UserLoginModel
+from src.auth.utils import create_access_token, check_password
 from src.auth.service import UserService
+from src.db.main import get_session
 from typing import List
 
 
@@ -38,3 +40,33 @@ async def get_all_users(session: AsyncSession = Depends(get_session)):
     users = await UserService(session).get_all_users()
 
     return users
+
+
+@auth_router.post("/login", status_code=status.HTTP_200_OK)
+async def login_user(
+    user_data: UserLoginModel, session: AsyncSession = Depends(get_session)
+):
+    email = user_data.email
+    password = user_data.password
+
+    if not (user := await UserService(session).get_user(email)) and (
+        not check_password(password, user.password_hash)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Username or Password",
+        )
+
+    access_token = create_access_token({"user_id": str(user.uid)})
+
+    return {"message": "Login Successful", "token": access_token, "user": user}
+
+
+@auth_router.post("/refresh_token", status_code=status.HTTP_200_OK)
+async def refresh_token():
+    pass
+
+
+@auth_router.post("/logout", status_code=status.HTTP_200_OK)
+async def logout_users():
+    pass

@@ -14,3 +14,11 @@ class UserSchema(BaseModel):
     username: str
     email: str
     created_at: datetime
+
+
+
+class UserLoginModel(BaseModel):
+    email:str
+    password:str
+
+
