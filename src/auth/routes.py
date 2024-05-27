@@ -49,17 +49,17 @@ async def login_user(
     email = user_data.email
     password = user_data.password
 
-    if not (user := await UserService(session).get_user(email)) and (
-        not check_password(password, user.password_hash)
-    ):
+    user = await UserService(session).get_user(email)
+
+    if user is not None and check_password(password, user.password_hash):
+        access_token = create_access_token({"user_id": str(user.uid)})
+
+        return {"message": "Login Successful", "token": access_token, "user": user}
+
+    else:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid Username or Password",
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Email Or Password"
         )
-
-    access_token = create_access_token({"user_id": str(user.uid)})
-
-    return {"message": "Login Successful", "token": access_token, "user": user}
 
 
 @auth_router.post("/refresh_token", status_code=status.HTTP_200_OK)
