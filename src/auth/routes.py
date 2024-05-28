@@ -60,8 +60,8 @@ async def login_user(
         )
 
 
-@auth_router.post("/me")
-async def current_user(user_creds: HTTPAuthorizationCredentials = Depends(security)):
+@auth_router.post("/me",dependencies=[Depends(security)])
+async def current_user():
     return {"message": "Current user"}
 
 

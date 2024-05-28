@@ -6,20 +6,21 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.books.schemas import BookCreateSchema, BookSchema, BookUpdateSchema
 from src.db.main import get_session
+from src.auth.auth_handler import security
 
 from .service import BookService
 
 book_router = APIRouter()
 
 
-@book_router.get("/", response_model=List[BookSchema])
+@book_router.get("/", response_model=List[BookSchema],dependencies=[Depends(security)])
 async def read_books(session: AsyncSession = Depends(get_session)):
     """Read all books"""
     books = await BookService(session).get_all_books()
     return books
 
 
-@book_router.get("/{book_uid}", response_model=BookSchema)
+@book_router.get("/{book_uid}", response_model=BookSchema,dependencies=[Depends(security)])
 async def read_book(book_uid: str, session: AsyncSession = Depends(get_session)):
     """Read a book"""
     book = await BookService(session).get_book(book_uid)
@@ -33,7 +34,7 @@ async def read_book(book_uid: str, session: AsyncSession = Depends(get_session))
         )
 
 
-@book_router.post("/", status_code=201, response_model=BookSchema)
+@book_router.post("/", status_code=201, response_model=BookSchema,dependencies=[Depends(security)])
 async def create_book(
     book: BookCreateSchema, session: AsyncSession = Depends(get_session)
 ):
@@ -43,7 +44,7 @@ async def create_book(
     return new_book
 
 
-@book_router.patch("/{book_uid}", response_model=BookSchema)
+@book_router.patch("/{book_uid}", response_model=BookSchema,dependencies=[Depends(security)])
 async def update_book(
     book_uid: str,
     update_data: BookUpdateSchema,
@@ -62,7 +63,7 @@ async def update_book(
         return updated_book
 
 
-@book_router.delete("/{book_uid}", status_code=204)
+@book_router.delete("/{book_uid}", status_code=204,dependencies=[Depends(security)])
 async def delete_book(book_uid: str, session: AsyncSession = Depends(get_session)):
     """delete a book"""
     result = await BookService(session).delete_book(book_uid)
