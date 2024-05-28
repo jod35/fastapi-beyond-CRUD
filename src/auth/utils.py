@@ -1,6 +1,7 @@
 from passlib.context import CryptContext
 from src.config import Config
 from src.auth.models import User
+from datetime import datetime, timedelta
 import jwt
 
 PASSWORD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -18,15 +19,20 @@ def create_password_hash(plain_password: str) -> str:
     return PASSWORD_CONTEXT.hash(plain_password)
 
 
-def create_access_token(user_details:dict):
-    token  = jwt.encode(
-        user_details,
-        SECRET_KEY,
-        ALGORITHM
-    )
+def create_access_token(data: dict, expires: timedelta | None = None):
+    """Create new access token for authorization"""
+    data = data.copy()
+
+    now = datetime.now()
+
+    if not expires:
+        expires = timedelta(minutes=30)
+
+    data.update({"exp": now + expires})
+
+    token = jwt.encode(data, SECRET_KEY, ALGORITHM)
 
     return token
-
 
 
 def get_user_from_jwt(token: str) -> str | None:
@@ -34,15 +40,10 @@ def get_user_from_jwt(token: str) -> str | None:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
-        if not (username:=payload.get('sub')):
+        if not (username := payload.get("sub")):
             return None
 
     except jwt.PyJWTError as e:
         return None
-    
+
     return username
-    
-
-
-
-
