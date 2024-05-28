@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from datetime import datetime
 import uuid
+from datetime import datetime
+
+from pydantic import BaseModel
 
 
 class UserCreationModel(BaseModel):
@@ -16,9 +17,6 @@ class UserSchema(BaseModel):
     created_at: datetime
 
 
-
 class UserLoginModel(BaseModel):
-    email:str
-    password:str
-
-
+    email: str
+    password: str

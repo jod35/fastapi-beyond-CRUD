@@ -1,8 +1,9 @@
-from sqlmodel import SQLModel, Field, Column
+import uuid
+from datetime import datetime
+
 import sqlalchemy.dialects.postgresql as pg
 from sqlalchemy import func
-from datetime import datetime
-import uuid
+from sqlmodel import Column, Field, SQLModel
 
 
 class Review(SQLModel, table=True):

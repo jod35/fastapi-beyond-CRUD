@@ -1,18 +1,16 @@
 from fastapi import APIRouter, Depends, status
-from fastapi.security import HTTPBasic
+from fastapi.security import HTTPAuthorizationCredentials
 from fastapi.exceptions import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.main import get_session
-from src.auth.schemas import UserCreationModel, UserSchema, UserLoginModel
-from src.auth.utils import create_access_token, check_password
-from src.auth.service import UserService
-from src.db.main import get_session
+from .schemas import UserCreationModel, UserSchema, UserLoginModel
+from .utils import create_access_token, check_password
+from .service import UserService
+from .auth_handler import security
 from typing import List
 
 
 auth_router = APIRouter()
-
-basic = HTTPBasic()
 
 
 @auth_router.post("/signup", status_code=status.HTTP_201_CREATED)
@@ -60,6 +58,11 @@ async def login_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Email Or Password"
         )
+
+
+@auth_router.post("/me")
+async def current_user(user_creds: HTTPAuthorizationCredentials = Depends(security)):
+    return {"message": "Current user"}
 
 
 @auth_router.post("/refresh_token", status_code=status.HTTP_200_OK)

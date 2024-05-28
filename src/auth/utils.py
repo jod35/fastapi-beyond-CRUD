@@ -1,8 +1,9 @@
-from passlib.context import CryptContext
-from src.config import Config
-from src.auth.models import User
 from datetime import datetime, timedelta
+
 import jwt
+from passlib.context import CryptContext
+
+from src.config import Config
 
 PASSWORD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = Config.SECRET_KEY
@@ -35,6 +36,17 @@ def create_access_token(data: dict, expires: timedelta | None = None):
     return token
 
 
+def decode_token(token: str) -> dict | None:
+    """Get data from an access token"""
+
+    try:
+        data = jwt.decode(token, SECRET_KEY)
+        return data
+
+    except Exception:
+        return {}
+
+
 def get_user_from_jwt(token: str) -> str | None:
     """Get user from  a given JWT"""
     try:
@@ -43,7 +55,7 @@ def get_user_from_jwt(token: str) -> str | None:
         if not (username := payload.get("sub")):
             return None
 
-    except jwt.PyJWTError as e:
+    except jwt.PyJWTError:
         return None
 
     return username

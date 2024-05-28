@@ -1,7 +1,8 @@
+from sqlmodel import desc, select
 from sqlmodel.ext.asyncio.session import AsyncSession
+
 from .models import Book
 from .schemas import BookCreateSchema
-from sqlmodel import select, desc
 
 
 class BookService:

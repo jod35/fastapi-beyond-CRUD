@@ -1,11 +1,11 @@
-from src.auth.models import User
-from sqlmodel.ext.asyncio.session import AsyncSession
-from src.auth.utils import create_password_hash
-from src.auth.schemas import UserCreationModel
-from sqlmodel import select, desc
 from passlib.context import CryptContext
+from sqlmodel import desc, select
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from .models import User
+from .schemas import UserCreationModel
+from .utils import create_password_hash
 from src.config import Config
-from .utils import check_password, create_password_hash
 
 
 SECRET_KEY = Config.SECRET_KEY
@@ -50,5 +50,3 @@ class UserService:
         await self.session.commit()
 
         return new_user
-
-

@@ -1,8 +1,10 @@
-from fastapi import FastAPI
-from src.books.routes import book_router
-from src.auth.routes import auth_router
 from contextlib import asynccontextmanager
-from .config import Settings
+
+from fastapi import FastAPI
+
+from src.auth.routes import auth_router
+from src.books.routes import book_router
+
 
 
 @asynccontextmanager

@@ -1,8 +1,9 @@
-from sqlmodel import SQLModel, Field, Column
+import uuid
+from datetime import datetime
+
 import sqlalchemy.dialects.postgresql as pg
 from sqlalchemy import func
-from datetime import datetime
-import uuid
+from sqlmodel import Column, Field, SQLModel
 
 
 class User(SQLModel, table=True):
@@ -24,7 +25,7 @@ class User(SQLModel, table=True):
     last_name: str = Field(nullable=True)
     is_verified: bool = False
     email: str
-    password_hash: str =Field(exclude=True)
+    password_hash: str = Field(exclude=True)
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=func.now()))
 
     def __repr__(self) -> str:

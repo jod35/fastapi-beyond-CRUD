@@ -1,6 +1,7 @@
-from sqlmodel import SQLModel, Field, Column
-import sqlalchemy.dialects.postgresql as pg
 import uuid
+
+import sqlalchemy.dialects.postgresql as pg
+from sqlmodel import Column, Field, SQLModel
 
 
 class Author(SQLModel, table=True):
