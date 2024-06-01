@@ -36,6 +36,10 @@ cd fastapi-beyond-the-CRUD-stuff
 ```console
 pip install -r requirements.txt
 ```
+- Run any database migrations
+```
+alembic upgrade head
+```
 - Finally run your the application.
 
 ```
