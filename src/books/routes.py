@@ -12,16 +12,20 @@ from .service import BookService
 
 book_router = APIRouter()
 
+session = Depends(get_session)
 
-@book_router.get("/", response_model=List[BookSchema],dependencies=[Depends(security)])
-async def read_books(session: AsyncSession = Depends(get_session)):
+
+@book_router.get("/", response_model=List[BookSchema], dependencies=[Depends(security)])
+async def read_books(session: AsyncSession = session):
     """Read all books"""
     books = await BookService(session).get_all_books()
     return books
 
 
-@book_router.get("/{book_uid}", response_model=BookSchema,dependencies=[Depends(security)])
-async def read_book(book_uid: str, session: AsyncSession = Depends(get_session)):
+@book_router.get(
+    "/{book_uid}", response_model=BookSchema, dependencies=[Depends(security)]
+)
+async def read_book(book_uid: str, session: AsyncSession = session):
     """Read a book"""
     book = await BookService(session).get_book(book_uid)
 
@@ -34,21 +38,23 @@ async def read_book(book_uid: str, session: AsyncSession = Depends(get_session))
         )
 
 
-@book_router.post("/", status_code=201, response_model=BookSchema,dependencies=[Depends(security)])
-async def create_book(
-    book: BookCreateSchema, session: AsyncSession = Depends(get_session)
-):
+@book_router.post(
+    "/", status_code=201, response_model=BookSchema, dependencies=[Depends(security)]
+)
+async def create_book(book: BookCreateSchema, session: AsyncSession = session):
     """Create a new book"""
     new_book = await BookService(session).create_book(book)
 
     return new_book
 
 
-@book_router.patch("/{book_uid}", response_model=BookSchema,dependencies=[Depends(security)])
+@book_router.patch(
+    "/{book_uid}", response_model=BookSchema, dependencies=[Depends(security)]
+)
 async def update_book(
     book_uid: str,
     update_data: BookUpdateSchema,
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = session,
 ):
     """ "update book"""
 
@@ -63,8 +69,12 @@ async def update_book(
         return updated_book
 
 
-@book_router.delete("/{book_uid}", status_code=204,dependencies=[Depends(security)])
-async def delete_book(book_uid: str, session: AsyncSession = Depends(get_session)):
+@book_router.delete(
+    "/{book_uid}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(security)],
+)
+async def delete_book(book_uid: str, session: AsyncSession = session):
     """delete a book"""
     result = await BookService(session).delete_book(book_uid)
 

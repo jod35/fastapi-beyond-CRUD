@@ -62,7 +62,8 @@ async def login_user(
 
 @auth_router.post("/me",dependencies=[Depends(security)])
 async def current_user():
-    return {"message": "Current user"}
+    
+    return {"user": user}
 
 
 @auth_router.post("/refresh_token", status_code=status.HTTP_200_OK)

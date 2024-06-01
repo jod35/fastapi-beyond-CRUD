@@ -39,5 +39,5 @@ pip install -r requirements.txt
 - Finally run your the application.
 
 ```
-python run.py
+fastapi dev src/
 ```

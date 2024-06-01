@@ -5,12 +5,14 @@ from pydantic import BaseModel
 
 
 class UserCreationModel(BaseModel):
+    """Model for user creation"""
     username: str
     email: str
     password: str
 
 
 class UserSchema(BaseModel):
+    """General user information model"""
     uid: uuid.UUID
     username: str
     email: str
@@ -18,5 +20,6 @@ class UserSchema(BaseModel):
 
 
 class UserLoginModel(BaseModel):
+    """A model for logging a user in to get an access token"""
     email: str
     password: str
