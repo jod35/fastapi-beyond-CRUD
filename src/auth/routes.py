@@ -7,7 +7,7 @@ from .utils import create_access_token, check_password
 from .service import UserService
 from .auth_handler import security
 from typing import List
-
+from datetime import timedelta
 
 auth_router = APIRouter()
 user_service = UserService()
@@ -54,8 +54,20 @@ async def login_user(
 
     if user is not None and check_password(password, user.password_hash):
         access_token = create_access_token({"user_id": str(user.uid)})
+        refresh_token = create_access_token(
+            {
+                "user_id": str(user.uid),
+                "refresh":True
+            },
+            expires=timedelta(days=2),
+        )
 
-        return {"message": "Login Successful", "token": access_token, "user": user}
+        return {
+            "message": "Login Successful",
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "user": user,
+        }
 
     else:
         raise HTTPException(
