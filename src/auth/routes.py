@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, status
-from fastapi.security import HTTPAuthorizationCredentials
 from fastapi.exceptions import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.main import get_session
-from .schemas import UserCreationModel, UserSchema, UserLoginModel
+from .schemas import UserCreateModel, UserModel, UserLoginModel
 from .utils import create_access_token, check_password
 from .service import UserService
 from .auth_handler import security
@@ -11,31 +10,35 @@ from typing import List
 
 
 auth_router = APIRouter()
+user_service = UserService()
 
 
-@auth_router.post("/signup", status_code=status.HTTP_201_CREATED)
-async def create_user_account(
-    user_data: UserCreationModel, session: AsyncSession = Depends(get_session)
+@auth_router.post(
+    "/signup", response_model=UserModel, status_code=status.HTTP_201_CREATED
+)
+async def create_user_Account(
+    user_data: UserCreateModel, session: AsyncSession = Depends(get_session)
 ):
     email = user_data.email
 
-    user = await UserService(session).get_user(email)
+    user_exists = await user_service.user_exists(email, session)
 
-    if user is not None:
+    if user_exists:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail={"error": "User Account Already Exists"},
+            detail="User with email already exists",
         )
-    else:
-        new_user = await UserService(session).create_user(user_data)
-        return {"message": "User Created successfully", "user": new_user}
+
+    new_user = await user_service.create_user(user_data, session)
+
+    return new_user
 
 
 @auth_router.get(
-    "/users", status_code=status.HTTP_200_OK, response_model=List[UserSchema]
+    "/users", status_code=status.HTTP_200_OK, response_model=List[UserModel]
 )
 async def get_all_users(session: AsyncSession = Depends(get_session)):
-    users = await UserService(session).get_all_users()
+    users = await user_service.get_all_users(session)
 
     return users
 
@@ -47,7 +50,7 @@ async def login_user(
     email = user_data.email
     password = user_data.password
 
-    user = await UserService(session).get_user(email)
+    user = await user_service.get_user_by_email(email, session)
 
     if user is not None and check_password(password, user.password_hash):
         access_token = create_access_token({"user_id": str(user.uid)})
@@ -58,12 +61,6 @@ async def login_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Email Or Password"
         )
-
-
-@auth_router.post("/me",dependencies=[Depends(security)])
-async def current_user():
-    
-    return {"user": user}
 
 
 @auth_router.post("/refresh_token", status_code=status.HTTP_200_OK)

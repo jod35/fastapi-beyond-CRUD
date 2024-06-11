@@ -1,52 +1,45 @@
-from passlib.context import CryptContext
-from sqlmodel import desc, select
-from sqlmodel.ext.asyncio.session import AsyncSession
-
 from .models import User
-from .schemas import UserCreationModel
-from .utils import create_password_hash
-from src.config import Config
-
-
-SECRET_KEY = Config.SECRET_KEY
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from .schemas import UserCreateModel
+from .utils import generate_passwd_hash
+from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlmodel import select, desc
 
 
 class UserService:
-    def __init__(self, session: AsyncSession):
-        self.session = session
-
-    async def get_user(self, email):
-        """get single user"""
+    async def get_user_by_email(self, email: str, session: AsyncSession):
         statement = select(User).where(User.email == email)
 
-        result = await self.session.exec(statement)
+        result = await session.exec(statement)
 
-        book = result.first()
+        user = result.first()
 
-        return book if book else None
+        return user
 
-    async def get_all_users(self):
+    async def user_exists(self, email, session: AsyncSession):
+        user = await self.get_user_by_email(email, session)
+
+        return True if user is not None else False
+
+    async def create_user(self, user_data: UserCreateModel, session: AsyncSession):
+        user_data_dict = user_data.model_dump()
+
+        new_user = User(**user_data_dict)
+
+        new_user.password_hash = generate_passwd_hash(user_data_dict["password"])
+
+        session.add(new_user)
+
+        await session.commit()
+
+        return new_user
+    
+
+    async def get_all_users(self, session:AsyncSession):
         """get all users"""
         statement = select(User).order_by(desc(User.created_at))
 
-        result = await self.session.exec(statement)
+        result = await session.exec(statement)
 
         books = result.all()
 
         return books
-
-    async def create_user(self, user_details: UserCreationModel):
-        """create user"""
-        user_dict = user_details.model_dump()
-
-        password_hash = create_password_hash(user_dict["password"])
-
-        user_dict["password_hash"] = password_hash
-
-        new_user = User(**user_dict)
-
-        self.session.add(new_user)
-        await self.session.commit()
-
-        return new_user

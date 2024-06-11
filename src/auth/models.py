@@ -1,32 +1,27 @@
-import uuid
-from datetime import datetime
-
+from sqlmodel import SQLModel, Field, Column
 import sqlalchemy.dialects.postgresql as pg
-from sqlalchemy import func
-from sqlmodel import Column, Field, SQLModel
-
+from datetime import datetime
+import uuid
 
 class User(SQLModel, table=True):
-    __tablename__ = "user_accounts"
-
-    uid: uuid.UUID = Field(
+    __tablename__ = 'users'
+    uid : uuid.UUID = Field(
         sa_column=Column(
             pg.UUID,
-            primary_key=True,
-            unique=True,
             nullable=False,
-            default=uuid.uuid4,
-            info={"description": "Unique identifier for the user account"},
+            primary_key=True,
+            default=uuid.uuid4
         )
     )
-
     username: str
-    first_name: str = Field(nullable=True)
-    last_name: str = Field(nullable=True)
-    is_verified: bool = False
     email: str
+    first_name: str
+    last_name: str
+    is_verified: bool = Field(default=False)
     password_hash: str = Field(exclude=True)
-    created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=func.now()))
+    created_at:datetime = Field(sa_column=Column(pg.TIMESTAMP,default=datetime.now))
+    update_at: datetime = Field(sa_column=Column(pg.TIMESTAMP,default=datetime.now))
 
-    def __repr__(self) -> str:
+
+    def __repr__(self):
         return f"<User {self.username}>"

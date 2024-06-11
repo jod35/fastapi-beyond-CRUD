@@ -13,12 +13,13 @@ from .service import BookService
 book_router = APIRouter()
 
 session = Depends(get_session)
+book_service = BookService()
 
 
 @book_router.get("/", response_model=List[BookSchema], dependencies=[Depends(security)])
 async def read_books(session: AsyncSession = session):
     """Read all books"""
-    books = await BookService(session).get_all_books()
+    books = await book_service.get_all_books(session)
     return books
 
 
@@ -27,7 +28,7 @@ async def read_books(session: AsyncSession = session):
 )
 async def read_book(book_uid: str, session: AsyncSession = session):
     """Read a book"""
-    book = await BookService(session).get_book(book_uid)
+    book = await book_service.get_book(book_uid, session)
 
     if book is not None:
         return book
@@ -41,9 +42,9 @@ async def read_book(book_uid: str, session: AsyncSession = session):
 @book_router.post(
     "/", status_code=201, response_model=BookSchema, dependencies=[Depends(security)]
 )
-async def create_book(book: BookCreateSchema, session: AsyncSession = session):
+async def create_book(book_data: BookCreateSchema, session: AsyncSession = session):
     """Create a new book"""
-    new_book = await BookService(session).create_book(book)
+    new_book = await book_service.create_book(book_data, session)
 
     return new_book
 
@@ -58,7 +59,7 @@ async def update_book(
 ):
     """ "update book"""
 
-    updated_book = await BookService(session).update_book(book_uid, update_data)
+    updated_book = await book_service.update_book(book_uid, update_data, session)
 
     if not updated_book:
         raise HTTPException(
@@ -76,7 +77,7 @@ async def update_book(
 )
 async def delete_book(book_uid: str, session: AsyncSession = session):
     """delete a book"""
-    result = await BookService(session).delete_book(book_uid)
+    result = await book_service.delete_book(book_uid, session)
 
     if result is not None:
         return {}
