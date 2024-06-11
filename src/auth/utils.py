@@ -15,7 +15,7 @@ def check_password(plain_password: str, hashed_password: str) -> bool:
     return PASSWORD_CONTEXT.verify(plain_password, hashed_password)
 
 
-def create_password_hash(plain_password: str) -> str:
+def generate_passwd_hash(plain_password: str) -> str:
     """Hash a password to be stored in the database"""
     return PASSWORD_CONTEXT.hash(plain_password)
 

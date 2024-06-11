@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 from fastapi.exceptions import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from src.books.schemas import BookCreateSchema, BookSchema, BookUpdateSchema
+from src.books.schemas import BookCreateModel, BookModel, BookUpdateModel
 from src.db.main import get_session
 from src.auth.auth_handler import security
 
@@ -16,7 +16,7 @@ session = Depends(get_session)
 book_service = BookService()
 
 
-@book_router.get("/", response_model=List[BookSchema], dependencies=[Depends(security)])
+@book_router.get("/", response_model=List[BookModel], dependencies=[Depends(security)])
 async def read_books(session: AsyncSession = session):
     """Read all books"""
     books = await book_service.get_all_books(session)
@@ -24,7 +24,7 @@ async def read_books(session: AsyncSession = session):
 
 
 @book_router.get(
-    "/{book_uid}", response_model=BookSchema, dependencies=[Depends(security)]
+    "/{book_uid}", response_model=BookModel, dependencies=[Depends(security)]
 )
 async def read_book(book_uid: str, session: AsyncSession = session):
     """Read a book"""
@@ -40,9 +40,9 @@ async def read_book(book_uid: str, session: AsyncSession = session):
 
 
 @book_router.post(
-    "/", status_code=201, response_model=BookSchema, dependencies=[Depends(security)]
+    "/", status_code=201, response_model=BookModel, dependencies=[Depends(security)]
 )
-async def create_book(book_data: BookCreateSchema, session: AsyncSession = session):
+async def create_book(book_data: BookCreateModel, session: AsyncSession = session):
     """Create a new book"""
     new_book = await book_service.create_book(book_data, session)
 
@@ -50,11 +50,11 @@ async def create_book(book_data: BookCreateSchema, session: AsyncSession = sessi
 
 
 @book_router.patch(
-    "/{book_uid}", response_model=BookSchema, dependencies=[Depends(security)]
+    "/{book_uid}", response_model=BookModel, dependencies=[Depends(security)]
 )
 async def update_book(
     book_uid: str,
-    update_data: BookUpdateSchema,
+    update_data: BookUpdateModel,
     session: AsyncSession = session,
 ):
     """ "update book"""

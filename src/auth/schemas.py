@@ -1,22 +1,27 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
-class UserCreationModel(BaseModel):
+class UserCreateModel(BaseModel):
     """Model for user creation"""
+    first_name: str
+    last_name: str
     username: str
     email: str
-    password: str
+    password:str
 
 
-class UserSchema(BaseModel):
+class UserModel(BaseModel):
     """General user information model"""
     uid: uuid.UUID
+    first_name: str
+    last_name: str
     username: str
     email: str
     created_at: datetime
+    update_at:datetime
 
 
 class UserLoginModel(BaseModel):
