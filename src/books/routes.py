@@ -6,7 +6,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.books.schemas import BookCreateModel, BookModel, BookUpdateModel
 from src.db.main import get_session
-from src.auth.auth_handler import security
+from src.auth.dependencies import security
 
 from .service import BookService
 
