@@ -2,7 +2,7 @@ from .models import User
 from .schemas import UserCreateModel
 from .utils import generate_passwd_hash
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlmodel import select, desc
+from sqlmodel import select
 
 
 class UserService:
@@ -26,20 +26,10 @@ class UserService:
         new_user = User(**user_data_dict)
 
         new_user.password_hash = generate_passwd_hash(user_data_dict["password"])
+        new_user.role = "user"
 
         session.add(new_user)
 
         await session.commit()
 
         return new_user
-    
-
-    async def get_all_users(self, session:AsyncSession):
-        """get all users"""
-        statement = select(User).order_by(desc(User.created_at))
-
-        result = await session.exec(statement)
-
-        books = result.all()
-
-        return books
