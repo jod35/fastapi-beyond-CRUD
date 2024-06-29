@@ -8,7 +8,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.main import get_session
 from .service import UserService
 from typing import Any, List
-from .models import User
+from src.db.models import User
 
 user_service = UserService()
 
