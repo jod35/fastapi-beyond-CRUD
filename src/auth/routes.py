@@ -1,23 +1,26 @@
+from datetime import datetime, timedelta
+
 from fastapi import APIRouter, Depends, status
-from .schemas import UserCreateModel, UserModel, UserLoginModel, UserBooksModel
-from .service import UserService
-from src.db.main import get_session
-from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
-from .utils import create_access_token, verify_password
 from fastapi.responses import JSONResponse
-from datetime import timedelta, datetime
-from .dependencies import (
-    RefreshTokenBearer,
-    AccessTokenBearer,
-    get_current_user,
-    RoleChecker,
-)
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from src.db.main import get_session
 from src.db.redis import add_jti_to_blocklist
+
+from .dependencies import (
+    AccessTokenBearer,
+    RefreshTokenBearer,
+    RoleChecker,
+    get_current_user,
+)
+from .schemas import UserBooksModel, UserCreateModel, UserLoginModel, UserModel
+from .service import UserService
+from .utils import create_access_token, verify_password
 
 auth_router = APIRouter()
 user_service = UserService()
-role_checker = RoleChecker(["admin","user"])
+role_checker = RoleChecker(["admin", "user"])
 
 
 REFRESH_TOKEN_EXPIRY = 2
