@@ -8,15 +8,12 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.main import get_session
 from src.db.redis import add_jti_to_blocklist
 
-from .dependencies import (
-    AccessTokenBearer,
-    RefreshTokenBearer,
-    RoleChecker,
-    get_current_user,
-)
+from .dependencies import (AccessTokenBearer, RefreshTokenBearer, RoleChecker,
+                           get_current_user)
 from .schemas import UserBooksModel, UserCreateModel, UserLoginModel, UserModel
 from .service import UserService
 from .utils import create_access_token, verify_password
+from src.errors import UserAlreadyExists, UserNotFound, InvalidCredentials, InvalidToken
 
 auth_router = APIRouter()
 user_service = UserService()
@@ -45,11 +42,8 @@ async def create_user_Account(
     user_exists = await user_service.user_exists(email, session)
 
     if user_exists:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="User with email already exists",
-        )
-
+        raise UserAlreadyExists()
+    
     new_user = await user_service.create_user(user_data, session)
 
     return new_user
@@ -91,9 +85,7 @@ async def login_users(
                 }
             )
 
-    raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN, detail="Invalid Email Or Password"
-    )
+    raise InvalidCredentials()
 
 
 @auth_router.get("/refresh_token")
@@ -105,9 +97,7 @@ async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer(
 
         return JSONResponse(content={"access_token": new_access_token})
 
-    raise HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Or expired token"
-    )
+    raise InvalidToken
 
 
 @auth_router.get("/me", response_model=UserBooksModel)
