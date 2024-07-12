@@ -83,4 +83,7 @@ class RoleChecker:
         if current_user.role in self.allowed_roles:
             return True
 
-        raise InsufficientPermission()
+        raise HTTPException(
+            status_code = status.HTTP_403_FORBIDDEN,
+            detail="You are not allowed to perform this action."
+        )

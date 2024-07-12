@@ -27,8 +27,9 @@ class UserModel(BaseModel):
 
 
 class UserBooksModel(UserModel):
-    books: List[Book]
-    reviews: List[ReviewModel]
+    # books: List[Book]
+    # reviews: List[ReviewModel]
+    pass
 
 
 class UserLoginModel(BaseModel):

@@ -17,7 +17,7 @@ from src.errors import UserAlreadyExists, UserNotFound, InvalidCredentials, Inva
 
 auth_router = APIRouter()
 user_service = UserService()
-role_checker = RoleChecker(["admin", "user"])
+role_checker = RoleChecker(["admin"])
 
 
 REFRESH_TOKEN_EXPIRY = 2
