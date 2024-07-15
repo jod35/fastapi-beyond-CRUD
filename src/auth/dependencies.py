@@ -1,7 +1,6 @@
 from typing import Any, List
 
-from fastapi import Depends, Request, status
-from fastapi.exceptions import HTTPException
+from fastapi import Depends, Request
 from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -83,7 +82,4 @@ class RoleChecker:
         if current_user.role in self.allowed_roles:
             return True
 
-        raise HTTPException(
-            status_code = status.HTTP_403_FORBIDDEN,
-            detail="You are not allowed to perform this action."
-        )
+        raise InsufficientPermission()

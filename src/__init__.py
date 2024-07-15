@@ -1,5 +1,4 @@
-from fastapi import FastAPI, status
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 from src.auth.routes import auth_router
 from src.books.routes import book_router
 from src.reviews.routes import review_router
