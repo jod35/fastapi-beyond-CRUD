@@ -103,11 +103,7 @@ class TagService:
     async def delete_tag(self, tag_uid: str, session: AsyncSession):
         """Delete a tag"""
 
-        statement = select(Tag).where(Tag.uid == tag_uid)
-
-        result = await session.exec(statement)
-
-        tag = result.first()
+        tag = self.get_tag_by_uid(tag_uid,session)
 
         if not tag:
             raise TagNotFound()

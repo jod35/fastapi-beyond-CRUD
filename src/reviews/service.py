@@ -88,4 +88,3 @@ class ReviewService:
         session.add(review)
 
         await session.commit()
-

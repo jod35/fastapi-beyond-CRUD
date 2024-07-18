@@ -1,9 +1,11 @@
-from pydantic import BaseModel, Field
-from src.books.schemas import Book
-from src.reviews.schemas import ReviewModel
+import uuid
 from datetime import datetime
 from typing import List
-import uuid
+
+from pydantic import BaseModel, Field
+
+from src.books.schemas import Book
+from src.reviews.schemas import ReviewModel
 
 
 class UserCreateModel(BaseModel):
@@ -27,11 +29,23 @@ class UserModel(BaseModel):
 
 
 class UserBooksModel(UserModel):
-    # books: List[Book]
-    # reviews: List[ReviewModel]
-    pass
+    books: List[Book]
+    reviews: List[ReviewModel]
 
 
 class UserLoginModel(BaseModel):
     email: str = Field(max_length=40)
     password: str = Field(min_length=6)
+
+
+class EmailModel(BaseModel):
+    addresses : List[str]
+
+
+class PasswordResetRequestModel(BaseModel):
+    email: str
+
+
+class PasswordResetConfirmModel(BaseModel):
+    new_password: str
+    confirm_new_password: str
