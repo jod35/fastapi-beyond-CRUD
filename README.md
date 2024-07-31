@@ -38,11 +38,11 @@ cd fastapi-beyond-CRUD/
 ```
 
 Create your virtualenv and activate it with
-```
+```console
 python3 -m venv env 
 ```
 activate the virtualenv with
-```
+```console
 source env/bin/activate
 ```
 Install all project dependencies with
@@ -56,7 +56,7 @@ All environment variable are located in this [file](./.env.example
 
 
 Next, run database migrations
-```
+```console
 alembic upgrade head
 ```
 
@@ -67,12 +67,12 @@ sh run-celery.sh
 
 Finally run your the application.
 
-```
+```console
 fastapi dev src/
 ```
 
 To run tests
-```
+```console
 pytest
 ```
 
