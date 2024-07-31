@@ -5,16 +5,12 @@ For more details, you can visit the project [website](https://jod35jon.github.io
 
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [Getting Started](#getting-started)
-3. [Prerequisites](#prerequisites)
-4. [Installation](#installation)
-5. [Running the Application](#running-the-application)
+1. [Getting Started](#getting-started)
+2. [Prerequisites](#prerequisites)
+3. [Installation](#installation)
+4. [Running the Application](#running-the-application)
 
 
-
-## Introduction
-This is the source code for the FastAPI Beyond CRUD series. Use this as a course material to follow along in the series.
 
 ## Getting Started
 Provide instructions on how to set up and run your FastAPI project.
