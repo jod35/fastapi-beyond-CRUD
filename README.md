@@ -1,46 +1,78 @@
 # FastAPI Beyond The CRUD Stuff
-This is source code for a video tutorial series we will cover on FastAPI. THis will focus on fastapi API Development beyond the CRUD stuff.
+This is source code for the [FastAPI Beyond CRUD](https://youtube.com/playlist?list=PLEt8Tae2spYnHy378vMlPH--87cfeh33P&si=rl-08ktaRjcm2aIQ). This course focuses on fastapi API Development concepts beyond the CRUD stuff.
+
+For more details, you can visit the project [website](https://jod35jon.github.io/fastapi-website/site/).
 
 ## Table of Contents
-Introduction
-Getting Started
-Prerequisites
-Installation
-Running the Application
+
+1. [Introduction](#introduction)
+2. [Getting Started](#getting-started)
+3. [Prerequisites](#prerequisites)
+4. [Installation](#installation)
+5. [Running the Application](#running-the-application)
+
 
 
 ## Introduction
-Explain what your FastAPI project does and why it exists. Provide a high-level overview of its features and functionality.
+This is the source code for the FastAPI Beyond CRUD series. Use this as a course material to follow along in the series.
 
 ## Getting Started
 Provide instructions on how to set up and run your FastAPI project.
 
-## Prerequisites
+### Prerequisites
 This project requires that you have the following dependencies
 
-- Python 3.x
-- FastAPI
+- Python >= 3.10
+- PostgreSQL
+- Redis
 
-## Project setup
-- Beging by cloning the project
+
+### Project setup
+Begin by cloning the project
 ```console
-git clone https://github.com/jod35/fastapi-beyond-the-CRUD-stuff.git
+git clone https://github.com/jod35/fastapi-beyond-CRUD.git
 ```
-- Enter your project
+Enter your project
 ```console
-cd fastapi-beyond-the-CRUD-stuff
+cd fastapi-beyond-CRUD/
 ```
 
-- Install your FastAPI project dependencies, you will need to follow the steps below
+Create your virtualenv and activate it with
+```
+python3 -m venv env 
+```
+activate the virtualenv with
+```
+source env/bin/activate
+```
+Install all project dependencies with
 
 ```console
 pip install -r requirements.txt
 ```
-- Run any database migrations
+
+All environment variable are located in this [file](./.env.example
+), so it is important you add them in a `.env` file before you run the server.
+
+
+Next, run database migrations
 ```
 alembic upgrade head
 ```
-- Finally run your the application.
+
+Open another terminal within your virtualenv and run a celery worker (in a Linux / Unix shell please)  
+```console
+sh run-celery.sh
+```
+
+Finally run your the application.
 
 ```
 fastapi dev src/
+```
+
+To run tests
+```
+pytest
+```
+
