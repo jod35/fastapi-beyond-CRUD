@@ -62,7 +62,7 @@ alembic upgrade head
 
 Open another terminal within your virtualenv and run a celery worker (in a Linux / Unix shell please)  
 ```console
-sh run-celery.sh
+sh runworker.sh
 ```
 
 Finally run your the application.
