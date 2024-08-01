@@ -6,6 +6,7 @@ fastapi-mail==1.4.1
 flower==2.0.1
 isort==5.13.2
 itsdangerous==2.2.0
+passlib==1.7.4
 psycopg2-binary==2.9.9
 PyJWT==2.8.0
 python-dotenv==1.0.1
