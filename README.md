@@ -67,8 +67,10 @@ Finally run your the application.
 fastapi dev src/
 ```
 
+
+
 To run tests
 ```console
 pytest
 ```
-
+Kindly Contribute to the docs [here](https://github.com/jod35jon/fastapi-beyond-crud-docs)
