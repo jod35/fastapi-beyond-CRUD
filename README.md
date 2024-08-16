@@ -1,7 +1,7 @@
 # FastAPI Beyond CRUD 
 This is source code for the [FastAPI Beyond CRUD](https://youtube.com/playlist?list=PLEt8Tae2spYnHy378vMlPH--87cfeh33P&si=rl-08ktaRjcm2aIQ) course. This course focuses on FastAPI Development concepts beyond the CRUD stuff.
 
-For more details, you can visit the project [website](https://jod35jon.github.io/fastapi-website/site/).
+For more details, you can visit the project [website](https://jod35jon.github.io/fastapi-beyond-crud-docs/site/).
 
 ## Table of Contents
 
@@ -67,8 +67,10 @@ Finally run your the application.
 fastapi dev src/
 ```
 
+
+
 To run tests
 ```console
 pytest
 ```
-
+Kindly Contribute to the docs [here](https://github.com/jod35jon/fastapi-beyond-crud-docs)
