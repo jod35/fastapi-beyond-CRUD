@@ -67,6 +67,11 @@ Finally run your the application.
 fastapi dev src/
 ```
 
+Optionally, you can run the application as a Docker container with
+
+```console
+docker compose up -d
+```
 
 
 To run tests
