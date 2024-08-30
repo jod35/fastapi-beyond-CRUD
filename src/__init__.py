@@ -18,7 +18,7 @@ This REST API is able to;
 - Add tags to Books e.t.c.
     """
 
-version_prefix ="/api/{version}"
+version_prefix =f"/api/{version}"
 
 app = FastAPI(
     title="Bookly",
