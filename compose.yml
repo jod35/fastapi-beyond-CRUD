@@ -5,7 +5,7 @@ services:
     build: .
     volumes:
       - .:/app
-    environment: 
+    environment:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
       JWT_ALGORITHM: ${JWT_ALGORITHM}
@@ -37,7 +37,7 @@ services:
       POSTGRES_PASSWORD: testpass
 
     ports:
-     - "5432:5432"
+      - "5432:5432"
 
     volumes:
       - db-data:/var/lib/postgresql/data
@@ -48,10 +48,10 @@ services:
     image: redis:6
 
     ports:
-     - "6379:6379"
+      - "6379:6379"
 
     networks:
-     - app-network
+      - app-network
 
   celery:
     build: .
