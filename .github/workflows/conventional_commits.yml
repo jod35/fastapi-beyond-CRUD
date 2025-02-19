@@ -18,7 +18,9 @@ jobs:
       - name: Check commit messages
         id: check_commits
         run: |
-          PR_COMMITS=$(gh pr view 1 --json commits --jq '.commits[].message')
+          # Fetch PR number dynamically
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_COMMITS=$(gh pr view $PR_NUMBER --json commits --jq '.commits[].message')
           echo "Commit Messages Found: $PR_COMMITS"
 
           if [[ -z "$PR_COMMITS" ]]; then
@@ -37,7 +39,7 @@ jobs:
 
           if [ "$INVALID" = true ]; then
             echo "Invalid commits found. Closing PR."
-            gh pr close 1 --comment "❌ PR closed: Commit messages do not follow Conventional Commits!"
+            gh pr close $PR_NUMBER --comment "❌ PR closed: Commit messages do not follow Conventional Commits!"
             exit 1
           fi
 
@@ -50,6 +52,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Get PR author email
+        id: get_author_email
+        run: |
+          PR_AUTHOR_EMAIL=$(gh pr view ${{ github.event.pull_request.number }} --json author --jq '.author.email')
+          echo "PR Author Email: $PR_AUTHOR_EMAIL"
+          echo "PR_AUTHOR_EMAIL=$PR_AUTHOR_EMAIL" >> $GITHUB_ENV
+
       - name: Send Email Notification
         uses: dawidd6/action-send-mail@v3
         with:
