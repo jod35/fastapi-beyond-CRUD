@@ -18,11 +18,17 @@ jobs:
       - name: Check commit messages
         id: check_commits
         run: |
-          PR_COMMITS=$(gh pr view ${{ github.event.pull_request.number }} --json commits --jq '.commits[].message')
+          PR_COMMITS=$(gh pr view 1 --json commits --jq '.commits[].message')
           echo "Commit Messages Found: $PR_COMMITS"
+
+          if [[ -z "$PR_COMMITS" ]]; then
+            echo "No commits found or PR number might be incorrect."
+            exit 1
+          fi
 
           INVALID=false
           for commit in $PR_COMMITS; do
+            echo "Checking commit: $commit"
             if [[ ! "$commit" =~ ^(feat|fix|docs|style|refactor|perf|test|chore|ci|build|revert)(\(.+\))?:\  ]]; then
               echo "❌ Invalid commit: $commit"
               INVALID=true
@@ -31,7 +37,7 @@ jobs:
 
           if [ "$INVALID" = true ]; then
             echo "Invalid commits found. Closing PR."
-            gh pr close ${{ github.event.pull_request.number }} --comment "❌ PR closed: Commit messages do not follow Conventional Commits!"
+            gh pr close 1 --comment "❌ PR closed: Commit messages do not follow Conventional Commits!"
             exit 1
           fi
 
