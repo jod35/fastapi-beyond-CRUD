@@ -1,0 +1,57 @@
+name: Check Conventional Commits
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  check-commits:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh
+
+      - name: Check commit messages
+        id: check_commits
+        run: |
+          PR_COMMITS=$(gh pr view ${{ github.event.pull_request.number }} --json commits --jq '.commits[].message')
+          echo "Commit Messages Found: $PR_COMMITS"
+
+          INVALID=false
+          for commit in $PR_COMMITS; do
+            if [[ ! "$commit" =~ ^(feat|fix|docs|style|refactor|perf|test|chore|ci|build|revert)(\(.+\))?:\  ]]; then
+              echo "❌ Invalid commit: $commit"
+              INVALID=true
+            fi
+          done
+
+          if [ "$INVALID" = true ]; then
+            echo "Invalid commits found. Closing PR."
+            gh pr close ${{ github.event.pull_request.number }} --comment "❌ PR closed: Commit messages do not follow Conventional Commits!"
+            exit 1
+          fi
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  send-email-on-failure:
+    needs: check-commits
+    if: failure()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Email Notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.ethereal.email
+          server_port: 587
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          from: "no-reply@bookly.com"
+          to: ${{ env.PR_AUTHOR_EMAIL }}
+          subject: "❌ PR Closed: Invalid Commit Messages"
+          body: "Your Pull Request in the repository ${{ github.repository }} was closed due to invalid commit messages. Please follow the Conventional Commits standard and try again."
