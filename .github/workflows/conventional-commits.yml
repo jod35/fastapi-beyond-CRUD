@@ -1,0 +1,101 @@
+name: Conventional Commits Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Conventional Commits
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: commits } = await github.rest.pulls.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            const pattern = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?(!)?: .+/;
+            const failedCommits = [];
+
+            for (const commit of commits) {
+              const message = commit.commit.message.split('\n')[0];
+              if (!pattern.test(message)) {
+                failedCommits.push(message);
+              }
+            }
+
+            if (failedCommits.length > 0) {
+              core.setOutput('failed', 'true');
+              core.setOutput('failed_commits', failedCommits.map(c => `- ${c}`).join('\n'));
+            } else {
+              core.setOutput('failed', 'false');
+              core.setOutput('failed_commits', '');
+            }
+
+      - name: Close PR and comment
+        if: steps.check.outputs.failed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const failedCommits = `${{ steps.check.outputs.failed_commits }}`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                '**This PR has been closed** because it contains commits that do not follow the [Conventional Commits](https://www.conventionalcommits.org/) specification.',
+                '',
+                '**Non-compliant commits:**',
+                failedCommits,
+                '',
+                'Please rewrite your commit messages using the format:',
+                '```',
+                '<type>(<optional scope>): <description>',
+                '```',
+                '',
+                'Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`',
+              ].join('\n'),
+            });
+
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              state: 'closed',
+            });
+
+      - name: Send failure notification email
+        if: steps.check.outputs.failed == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.ethereal.email
+          server_port: 587
+          username: ${{ secrets.ETHEREAL_EMAIL }}
+          password: ${{ secrets.ETHEREAL_PASSWORD }}
+          subject: "PR #${{ github.event.pull_request.number }} Closed - Conventional Commit Violation"
+          body: |
+            PR #${{ github.event.pull_request.number }} "${{ github.event.pull_request.title }}" has been closed.
+
+            Reason: Commits do not follow the Conventional Commits specification.
+
+            Non-compliant commits:
+            ${{ steps.check.outputs.failed_commits }}
+
+            Repository: ${{ github.repository }}
+            PR Author: ${{ github.event.pull_request.user.login }}
+
+            Please rewrite your commit messages using the format: <type>(<scope>): <description>
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
+          from: ${{ secrets.ETHEREAL_EMAIL }}
+
+      - name: Fail workflow if commits are non-compliant
+        if: steps.check.outputs.failed == 'true'
+        run: exit 1
