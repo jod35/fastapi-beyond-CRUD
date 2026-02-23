@@ -76,5 +76,28 @@ Run the tests using this command
 pytest
 ```
 
+## GitHub Actions CI/CD
+
+This project includes two GitHub Actions workflows:
+
+### 1. Conventional Commits Check
+Triggered on every Pull Request. Validates that all commit messages follow the [Conventional Commits](https://www.conventionalcommits.org/) specification. If any commit is non-compliant, the PR is automatically closed and an email notification is sent.
+
+### 2. Nightly Build
+Runs every night at 12:00 AM UTC (or manually via `workflow_dispatch`). Runs the test suite first — if tests pass, a Docker image is built and pushed to the GitHub Container Registry (`ghcr.io`). If tests fail, the build is aborted and an email notification is sent.
+
+### Required GitHub Secrets
+Set these under **Settings > Secrets and variables > Actions** in your repository:
+
+| Secret | Description |
+|---|---|
+| `ETHEREAL_EMAIL` | Ethereal SMTP username (create at https://ethereal.email/create) |
+| `ETHEREAL_PASSWORD` | Ethereal SMTP password |
+| `NOTIFICATION_EMAIL` | Recipient email address for failure notifications |
+
+### Required GitHub Settings
+- Go to **Settings > Actions > General > Workflow permissions**
+- Select **Read and write permissions** (needed for pushing images to GHCR)
+
 ## Contributing
 I welcome contributions to improve the documentation! You can contribute [here](https://github.com/jod35/fastapi-beyond-crud-docs).
