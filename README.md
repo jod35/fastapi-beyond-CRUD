@@ -134,6 +134,10 @@ Both workflows use SMTP for email notifications. Configure these secrets in **Se
 ## Contributing
 I welcome contributions to improve the documentation! You can contribute [here](https://github.com/jod35/fastapi-beyond-crud-docs).
 
+## License
+
+This project is for educational purposes as part of the [FastAPI Beyond CRUD](https://youtube.com/playlist?list=PLEt8Tae2spYnHy378vMlPH--87cfeh33P&si=rl-08ktaRjcm2aIQ) course by Ssali Jonathan.
+
 ## Acknowledgements
 
 Built as part of the CS463/663 course assignment.
