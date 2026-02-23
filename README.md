@@ -120,6 +120,11 @@ Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`
 
 **Container image:** `ghcr.io/manmohan659/fastapi-beyond-crud:nightly`
 
+**Pull the latest nightly image:**
+```bash
+docker pull ghcr.io/manmohan659/fastapi-beyond-crud:nightly
+```
+
 ### Required GitHub Secrets
 
 Both workflows use SMTP for email notifications. Configure these secrets in **Settings > Secrets and variables > Actions**:
@@ -155,3 +160,4 @@ This project is for educational purposes as part of the [FastAPI Beyond CRUD](ht
 Built as part of the CS463/663 course assignment.
 Maintained by Manmohan Sharma.
 Last updated: February 2026.
+For questions, open an issue on GitHub.
