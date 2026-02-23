@@ -7,8 +7,8 @@ services:
       DATABASE_URL: postgresql+asyncpg://bookly_user:bookly_pass@db:5432/bookly_db
       JWT_SECRET: supersecretjwtkey123
       JWT_ALGORITHM: HS256
-      MAIL_USERNAME: bookly@ethereal.email
-      MAIL_PASSWORD: etherealpassword
+      MAIL_USERNAME: berenice.macgyver12@ethereal.email
+      MAIL_PASSWORD: PJHMa6WgMBbWXXPxet
       MAIL_SERVER: smtp.ethereal.email
       MAIL_PORT: 587
       MAIL_FROM: bookly@ethereal.email
@@ -60,8 +60,8 @@ services:
       DATABASE_URL: postgresql+asyncpg://bookly_user:bookly_pass@db:5432/bookly_db
       JWT_SECRET: supersecretjwtkey123
       JWT_ALGORITHM: HS256
-      MAIL_USERNAME: bookly@ethereal.email
-      MAIL_PASSWORD: etherealpassword
+      MAIL_USERNAME: berenice.macgyver12@ethereal.email
+      MAIL_PASSWORD: PJHMa6WgMBbWXXPxet
       MAIL_SERVER: smtp.ethereal.email
       MAIL_PORT: 587
       MAIL_FROM: bookly@ethereal.email
