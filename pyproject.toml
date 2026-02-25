@@ -1,7 +1,10 @@
 [project]
 name = "fastapi-beyond-crud"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "fastapi[standard]>=0.129.0",
+]
+
+[tool.fastapi]
+entrypoint="main:app"
