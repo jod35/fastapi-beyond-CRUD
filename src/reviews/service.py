@@ -68,7 +68,7 @@ class ReviewService:
 
         return result.all()
 
-    async def delete_review_to_from_book(
+    async def delete_review_from_book(
         self, review_uid: str, user_email: str, session: AsyncSession
     ):
         user = await user_service.get_user_by_email(user_email, session)
@@ -81,7 +81,7 @@ class ReviewService:
                 status_code=status.HTTP_403_FORBIDDEN,
             )
 
-        session.delete(review)
+        await session.delete(review)
 
         await session.commit()
 
