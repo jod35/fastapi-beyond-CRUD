@@ -1,4 +1,4 @@
-# fastapi-beyond-crud
+# fastapi-beyond-CRUD
 
 A project created with FastAPI CLI.
 
@@ -14,10 +14,9 @@ Visit http://localhost:8000
 
 ### Deploy to FastAPI Cloud
 
-> FastAPI Cloud is currently in private beta. Join the waitlist at https://fastapicloud.com
+Sign up and log in at https://fastapicloud.com, then deploy with:
 
 ```bash
-uv run fastapi login
 uv run fastapi deploy
 ```
 

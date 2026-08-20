@@ -3,8 +3,5 @@ name = "fastapi-beyond-crud"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
-    "fastapi[standard]>=0.129.0",
+    "fastapi[standard]>=0.141.1",
 ]
-
-[tool.fastapi]
-entrypoint="main:app"
