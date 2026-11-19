@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Path, Query
+from datetime import datetime
+
+from fastapi import FastAPI, Path, Query, Body
 from pydantic import BaseModel, Field
 from typing import Annotated
 
@@ -11,8 +13,6 @@ async def main() -> dict:
 
 
 # path params
-
-
 @app.get("/greet/{name}")
 async def greet_name(name: str = Path(max_length=12, min_length=2)) -> dict:
     return {"message": f"Hello {name}"}
@@ -24,9 +24,6 @@ async def product_detail(product_id: int = Path(ge=1, le=1_000_000)) -> dict:
 
 
 # query params
-
-# www.google.com/search?q=web
-
 names = ["Phil", "JOnathan", "Joel", "Jackie"]
 
 
@@ -57,3 +54,17 @@ async def product_list(product_filters: Annotated[ProductFilters, Query()]) -> d
             "category": product_filters.category,
         }
     }
+
+# sending data via the request body
+class ProductCreateModel(BaseModel):
+    name: str
+    market_price: int
+    cost_price: int | None = None
+    created_at: datetime = Field(default_factory=datetime.now)
+
+
+@app.post("/products")
+async def create_product(
+    product_data: ProductCreateModel, extra_data: str = Body(max_length=12)
+) -> dict:
+    return {"product": product_data.model_dump(), "extra_data": extra_data}
